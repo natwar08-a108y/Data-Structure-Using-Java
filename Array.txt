@@ -1,0 +1,394 @@
+ARRAYS:
+
+1. Why we need arrays:
+   → To handle large collection of similar data types
+   → It is a data structure to hold data
+
+2. Syntax:
+   datatype[] variable_name = new datatype[size];
+
+   Example:
+   int[] rollnos = {51, 82, 13, 15, 16};
+
+   OR
+
+   int[] rollnos = new int[5];   // store 5 roll numbers
+
+3. Internal working of array:
+
+   int[] rollnos;    // declaration of array
+   → rollnos reference is created in stack
+
+   rollnos = new int[5];   // initialization
+   → actual memory allocation happens here
+   → object is created in heap memory
+
+   (compile time → declaration)
+   (run time → initialization)
+
+   int[] arr = new int[5];
+
+   → datatype: int[]
+   → ref var: arr
+   → creating object in heap memory
+
+   Above concept is known as Dynamic Memory Allocation
+
+
+4. Internal Representation of Array:
+
+   In Java, memory allocation depends on JVM whether it is continuous or not.
+
+   Reason 1: Objects are stored in heap memory
+   Reason 2: In JLS (Java Language Specification), heap objects are not necessarily continuous
+   Reason 3: Dynamic memory allocation, hence array objects may not be continuous (depends on JVM)
+
+
+5. Index of an array:
+
+   index →   0   1   2   3   4   5
+   arr  →   [3,  8,  9, 10, 53, 33]
+
+   arr[0] = 3
+   arr[1] = 8
+   arr[2] = 9
+   arr[3] = 10
+   arr[4] = 53
+   arr[5] = 33
+
+
+6. Changing value of array:
+
+   arr[4] = 99;
+
+   New array:
+   [3, 8, 9, 10, 99, 33]
+
+NEW KEYWORD IN ARRAY
+
+1. new keyword:
+   → Used to create an object
+
+   int[] arr = new int[5];
+
+   → It will create an object in heap memory of array size 5
+
+   If we don’t provide values in array,
+   by default it stores:
+   [0, 0, 0, 0, 0]   (for int type)
+
+   string[] arr = new String[4];
+
+   → Default values will be null
+
+
+2. Memory Concept:
+
+   arr → stored in stack (reference variable)
+
+   Actual array/object → stored in heap memory
+
+   Note:
+   - Each object can be stored in different parts of heap memory
+   - null is a special literal
+
+   Primitive arrays (int, char, etc.) → values stored directly
+   Objects → stored in heap memory
+
+
+3. Arrays to String:
+
+   Arrays.toString(array)
+   → Internally uses loop
+   → Gives output in proper format
+
+   Example:
+   [1, 2, 3, 4]
+
+   Note:
+   - Arrays are mutable (we can change values)
+   - Strings are immutable
+
+
+--------------------------------------------------
+
+4. 2-D ARRAY:
+
+   Example:
+
+   1   2   3
+   4   5   6
+   7   8   9
+
+   Declaration:
+
+   int[][] arr = new int[3][3];
+
+   → Row size is mandatory
+   → Column size can be given
+
+   OR
+
+   int[][] arr = {
+       {1, 2, 3},
+       {4, 5, 6},
+       {7, 8, 9}
+   };
+
+
+5. Internal Representation:
+
+   → 2D array is "array of arrays"
+
+   arr (stack) → reference
+
+   Heap:
+   [
+     [1, 2, 3]   → row 0
+     [4, 5, 6]   → row 1
+     [7, 8, 9]   → row 2
+   ]
+
+   arr[0] = [1, 2, 3]
+   arr[0][2] = 3
+
+90 = transpose + reverse row
+180 = reverse row + reverse column
+270 = transpose + reverse col
+
+--------------------------------------------------
+
+6. ArrayList:
+
+   → ArrayList is part of Collection Framework
+   → Present in java.util package
+   → Provides dynamic arrays
+   → Slower than standard arrays (slightly)
+
+   Syntax:
+
+   ArrayList<Integer> list = new ArrayList<>();
+
+   → Uses wrapper classes (Integer instead of int)
+   → Can pass initial capacity (e.g., 10)
+
+
+7. Internal Working of ArrayList:
+
+   → Size is fixed internally
+
+   When arraylist gets full:
+
+   a) Creates new arraylist of larger size
+   b) Copies old elements into new arraylist
+   c) Deletes old array
+
+
+8. Arrays are Mutable:
+
+   Example:
+
+   int[] nums = {3, 4, 5, 12};
+
+   System.out.println(Arrays.toString(nums));
+
+   change(nums);
+
+   System.out.println(Arrays.toString(nums));
+
+
+   // Function
+
+   static void change(int[] arr) {
+       arr[0] = 99;
+   }
+
+Output of this is quite shocking:
+[ 3, 4, 5, 12 ]
+[ 99, 4, 5, 12 ]
+
+How does this happened: They are pointing
+to the same object hence change in any will
+change it.
+
+nums --------> [ 3, 4, 5, 12 ]
+arr  -------/
+
+              Now,    arr[0] = 99
+
+nums --------> [ 99, 4, 5, 12 ]
+arr  -------/
+
+--------------------------------- 2-D array -------------------------------------
+
+Individual arr in 2-D array can vary because they are considered separate.
+
+int[][] arr2D = {
+    { 1, 2, 3 }, // 0th index
+    { 4, 5 },    // 1st index
+    { 6, 7, 8, 9 } // 2nd index
+};
+
+arr[2] = { 6, 7, 8, 9 }
+arr[2][0] = 6
+       |--> ka 0 index
+
+Taking input from user.
+
+Scanner in = new Scanner(System.in);
+int[][] arr = new int[3][];
+arr.length --> no. of rows.
+ 
+ Now input taking.
+
+for( int row = 0; row < arr.length; row++ ){
+    // for each col in every
+    for( int col = 0; col < arr[row].length; col++ ){ 
+        // every array at the that row -> the length of that row
+        arr[row][col] = in.nextInt();
+    }
+    System.out.println() ; -> for new line.
+}
+
+Eg for [3][2]
+
+  0    1
+0 [ 23 | 18 ]
+1 [    |    ]
+2 [    |    ]
+
+For ( row = 0; row < 3; row++ ){
+    // now we take every row
+    for( col = 0; col < 2; col++ ){
+        arr[r][c] = input
+    }
+}
+
+Dry run this: -----> This will be order.
+row      col
+ 0  ---> 0, 1, (2 is crossed out)
+ |
+ 1  ---> 0, 1
+ |
+ 2  ---> 0, 1
+
+Here each row is array itself hence
+we can also use: Arrays.toString method.
+
+for( int row = 0; row < arr.length; row++ ){
+    System.out.print(Arrays.toString(arr[row]));
+}
+
+Now each element is an array itself 
+hence we can use that also
+
+for ( int[] a : arr ) {
+    System.out.print( Arrays.toString ( a ) );
+}
+
+why we are saying arr[row].length
+(crossed out: for (int row = 0; row < arr.length; row) { )
+
+int [][] arr = {
+    { 1, 2, 3, 4 },      ab ishe case mai
+    { 5, 6 },            kya daloge column
+    { 7, 8, 9 }          isliye ham
+};                       arr[row].length ke
+                         baat kar rahe hai
+
+for ( int row = 0; row < arr.length; row++ ) {
+    for ( int col = 0; col < arr[row].length; col++ ) {
+        System.out.print( arr[row][col] + " " );
+    }
+    System.out.println( );
+}
+
+// Arrow pointing to arr[row].length:
+it is going to run for the length of arr
+so, 1st time 4
+2nd time 2
+3rd time 3
+
+// Top annotation: this is internally calling toString method
+ArrayList<Integer> list = new ArrayList<>(10);
+
+// Arrow pointing to <Integer>:
+It is telling what type of data is stored
+let say it may be string
+
+// How to use:
+list.add ( 67 );
+System.out.println( list );
+
+add for as much as you want forget about capacity.
+
+you can also check any item which is 
+present in the list does it contain or
+
+System.out.println ( list.contains ( 765432 ) );
+return true / false.
+
+// replacing an element.
+list.set ( 0, 99 );
+System.out.println( list );
+      |
+      V
+0th index will become 99.
+
+// Remove index:
+list.remove ( 2 );
+
+// for taking input:
+for ( int i = 0; i < 5; i++ ) {
+    list.add ( in.nextInt() );
+}
+
+for ( int i = 0; i < 5; i++ ) {
+    System.out.println( list.get ( i ) ); // Pass index here,
+                            // list [index] syntax will 
+                            // not work here.
+}
+SOP ( list )
+
+How it works internally.
+
+[ Diagram: 'arr' in Stack pointing to elements in Heap ]
+
+1) size is fixed internally kuch
+2) dekho jaishe hi let say kuch bharta hai tho 
+   who arraylist ki size ko badha deta hai
+
+[ 1, 2, 9 .... ]  =>  [ 1, 2, 9, 18 . . . . ]
+       |                      ^
+       |______________________|
+       Size increase by some limit
+       copy into new array list of let say 
+       double size (assume hai)
+       bas samjhane ke liye.
+
+Multidimensional arraylist
+
+ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+
+// initialising array list
+for ( int i = 0; i < 3; i++ ) {
+    list.add( new ArrayList<>() );
+}
+
+// if you don't initialise it will give "null"
+
+Taking input from user:
+
+// add elements
+for ( int i = 0; i < 3; i++ ) {
+    for ( int j = 0; j < 3; j++ ) {
+        list.get(i).add( in.nextInt() );
+    }
+}
+System.out.print( list )
+
+Output:
+1 2 3 4 5 6 7 8 9
+[[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+
+if you don't add P (the initialization loop) you will get error.

@@ -1,0 +1,84 @@
+1. CEILING OF A NUMBER
+Definition:
+The smallest element in a sorted array that is greater than or equal to the target value.
+
+Example:
+Array: [2, 3, 5, 9, 14, 16, 18]
+- ceiling(arr, target=14) -> 14
+- ceiling(arr, target=15) -> 16
+- ceiling(arr, target=4)  -> 5
+- ceiling(arr, target=20) -> Doesn't exist (-1)
+
+Deep Dive / Dry Run (Target = 15):
+- Step 1: start = 0 (val 2), end = 6 (val 18). mid = 3 (val 9).
+  Since 9 < 15, update pointer: start = mid + 1 -> start index 4 (val 14), end index 6 (val 18).
+- Step 2: mid = 5 (val 16).
+  Since 16 > 15, update pointer: end = mid - 1 -> end index 4 (val 14). start is still index 4 (val 14).
+- Step 3: start = 4, end = 4. mid = 4 (val 14).
+  Since 14 < 15, update pointer: start = mid + 1 -> start index 5 (val 16). end remains index 4 (val 14).
+- Step 4: Loop condition (start <= end) is violated because start (5) > end (4). The loop breaks.
+Result: The start pointer now points to index 5, which holds the value 16. This is the ceiling answer.
+
+
+2. FLOOR OF A NUMBER
+Definition:
+The greatest element in a sorted array that is less than or equal to the target value.
+
+Mechanism:
+It follows the exact same approach as the ceiling problem. However, at the final step when the loop condition is violated, the 'end' pointer will point to the correct answer.
+From the previous dry run setup, when the loop breaks, end will point to index 4 (val 14).
+
+Edge Cases:
+- If the target is greater than the maximum element in the array, the ceiling does not exist -> return -1.
+- If the target is less than the minimum element in the array, the floor does not exist -> return -1.
+
+
+3. LEETCODE 744: FIND SMALLEST LETTER GREATER THAN TARGET
+Core Strategy:
+- Apply the exact same pointer logic as finding the ceiling of a number.
+- Ignore looking for the target itself; the goal is strictly to find the next character that is larger than the target.
+- Wrap-around rule: The letters are circular. If no character is larger than the target (e.g., target = 'j' in ['c', 'd', 'f', 'j']), it wraps around to return the first element at index 0.
+
+Loop Termination & Optimization:
+When the loop condition is violated, start will equal the length of the array (N). Instead of checking "if start == N return 0", you can directly use the modulo operator:
+return arr[start % N]
+This correctly handles the wrap-around back to 0 while keeping index positions intact for other valid ceiling bounds.
+
+
+4. LEETCODE 34: FIND FIRST AND LAST POSITION OF ELEMENT IN SORTED ARRAY
+Example:
+Array: [5, 7, 7, 7, 7, 8, 8, 10], Target = 7
+
+Core Strategy:
+Since the array is sorted, we execute two separate, independent binary searches to maintain O(log n) efficiency.
+- First Search (Left Boundary): Run a binary search to find a target match. When arr[mid] == target, do not stop. Lock this index as a potential first occurrence, and force the search to continue looking left by adjusting end = mid - 1.
+- Second Search (Right Boundary): Run another binary search. When arr[mid] == target, lock this index as a potential last occurrence, and force the search to continue looking right by adjusting start = mid + 1.
+
+
+5. FIND POSITION OF AN ELEMENT IN A SORTED ARRAY OF INFINITE NUMBERS
+The Problem:
+Because the array is infinitely long, we do not have an ending index bound. Without an 'end', we cannot calculate the standard initial 'mid'.
+
+Core Strategy (Reverse Binary Search):
+- Instead of starting with a massive range and dividing it in half, start with a tiny window of 2 elements and exponentially double its size until the target falls within the window bounds.
+- Start with start = 0, end = 1.
+- Compare target with arr[end]. If the target is greater than arr[end], shift and double the chunk:
+  * New start = end + 1
+  * New end = end + (window_size) * 2 -> end = end + (end - start + 1) * 2
+- As soon as target <= arr[end], the range is successfully bounded. You can now execute a standard binary search using the current start and end indices.
+
+
+6. LEETCODE 852 / 162: PEAK INDEX IN A MOUNTAIN / BITONIC ARRAY
+Definition:
+A mountain or bitonic array monotonically strictly increases up to a peak element, and then monotonically strictly decreases.
+Example: [1, 2, 3, 5, 7, 6, 3, 2] -> Ascending part: [1, 2, 3, 5] | Peak: 7 | Descending part: [6, 3, 2]
+
+Core Strategy:
+Compare the middle element with its next neighbor to figure out which slope you are on:
+- Case 1: If arr[mid] > arr[mid + 1]
+  You are in the descending part of the array. The peak could be this mid element or it could lie somewhere to the left. Therefore, update: end = mid.
+- Case 2: If arr[mid] < arr[mid + 1]
+  You are in the ascending part of the array. The peak must lie strictly to the right of this element. Therefore, update: start = mid + 1.
+
+Termination:
+The search continues until start == end. At that exact point, both pointers point to the maximum peak element because they have converged on the single turning point.

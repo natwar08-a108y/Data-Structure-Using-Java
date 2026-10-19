@@ -1,0 +1,67 @@
+Definition:
+In Binary Search, we find a target element in a SORTED array by repeatedly 
+dividing the search interval in half. We compare the target with the middle 
+element and eliminate the half where the target cannot exist.
+
+CRITICAL PRE-CONDITION: 
+The data structure MUST BE SORTED (either ascending or descending) before 
+applying Binary Search. If it is unsorted, Binary Search will fail.
+
+A. Searching an Element in a Sorted Array (Iterative Approach):
+------------------------------------------------------------------------
+We maintain two pointers: 'start' (0) and 'end' (array_length - 1).
+
+Loop while start <= end:
+1. Find the middle element: mid = start + (end - start) / 2;
+2. Check conditions:
+   a. If (Array[mid] == target): 
+      -> Return the index 'mid'.
+   b. If (Array[mid] < target): 
+      -> Target is in the right half. Change start = mid + 1;
+   c. If (Array[mid] > target): 
+      -> Target is in the left half. Change end = mid - 1;
+
+If the loop finishes and start > end, the element is not present.
+-> Return -1 (Not Found indicator).
+
+[Note on Calculating Mid]: 
+We use 'start + (end - start) / 2' instead of '(start + end) / 2' to 
+prevent integer overflow bugs when dealing with massive array sizes.
+
+Instead of writing manual loops, Java provides optimized built-in 
+methods that implement Binary Search in O(log n) time:
+
+a. For primitive arrays (e.g., int[]):
+   -> Arrays.binarySearch(Array_Name, target_value);
+
+b. For Object arrays (e.g., String[]):
+   -> Arrays.binarySearch(Array_Name, target_value);
+
+c. For ArrayList / Collections:
+   -> Collections.binarySearch(list_name, target_value);
+
+Important Rules for Built-in Functions:
+- If found: Returns the exact index (>= 0) of the target.
+- If not found: Returns a negative number '-(insertion_point) - 1'.
+
+Time & Space Complexity:
+------------------------------------------------------------------------
+| Case / Metric   | Time Complexity | When does it happen?             |
+|-----------------|-----------------|----------------------------------|
+| Best Case Time  | O(1)            | Target is the exact mid element  |
+|                 |                 | on the very first comparison.    |
+|-----------------|-----------------|----------------------------------|
+| Worst Case Time | O(log n)        | Target is at the final split or  |
+|                 |                 | not present in the array at all. |
+|-----------------|-----------------|----------------------------------|
+| Average Case    | O(log n)        | Standard expected lookup time.   |
+|-----------------|-----------------|----------------------------------|
+| Space Complexity| O(1)            | Iterative approach is in-place,  |
+|                 |                 | requiring no extra memory.       |
+------------------------------------------------------------------------
+*Note: Recursive Binary Search takes O(log n) space due to call stack.
+
+Theoretical Limitations:
+- Cannot work on Unsorted Data: Requires sorting first, which costs O(n log n).
+- Structure Dependent: Works perfectly on Arrays (random access O(1)), but 
+  highly inefficient on Linked Lists because traversing to 'mid' costs O(n).

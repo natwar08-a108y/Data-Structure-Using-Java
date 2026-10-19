@@ -1,0 +1,30 @@
+Linear Search: In Linear search we traverse through an array Comparing each element one by one.
+Time & Space Complexity:
+Best Case: Element is found at first position -> O(1)
+Average Case: Element is found at specific index still O(n)
+Worst Case: Element is not Found or present at last Number of comparision is n -> O(n)
+Space Complexity: in-place algo: O(1).
+
+Application:
+1. Finding Minimum/Maximum element in array:
+In this we assume first element as Min/Max and compare each element one by one with Min/Max.
+If:
+a. Element is Min In case of min change the value of min variable with that element.
+b. Element is Max In Case of max change the value of max variable with that element.
+Else:
+Continue
+
+There are certain Built-in Function:
+a. For Finding Max element in Array: Arrays.stream(Array_Name).max().getAsInt();
+b. For Finding Min element in Array: Arrays.stream(Array_Name).min().getAsInt();
+c. For Finding Max element in ArrayList: Collections.max(list_name);
+d. For Finding Max element in ArrayList: Collections.min(list_name);
+They also take O(n) time.
+
+2. Searching an element in unsorted Array:
+Compare each element one by one with target value 
+If element equals the target return element's index. 
+If element is not found return -1(generally).
+
+This searching are good for Smaller size of array. For larger value prefer Binary search on HashMaps.
+

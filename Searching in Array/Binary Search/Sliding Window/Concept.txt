@@ -1,0 +1,59 @@
+1. THE SLIDING WINDOW TECHNIQUE
+The Sliding Window Technique is an algorithmic pattern used to transform nested loops (O(N^2)) into a single loop (O(N)). It is primarily applied to problems involving arrays, lists, or strings where you need to find a subsegment (subarray or substring) satisfying a specific condition.
+
+Instead of recalculating the property of the subsegment from scratch every time, the "window" slides across the collection by updating the state incrementally (subtracting the element leaving from the back and adding the new element entering from the front).
+
+2. TYPES OF SLIDING WINDOWS
+A. FIXED-SIZE SLIDING WINDOW
+- The size of the window 'k' remains constant.
+- Example problem: "Find the maximum sum of a subarray of size k."
+- Approach:
+  1. Compute the result for the first window of size k.
+  2. Slide the window one step forward at a time.
+  3. Update the state: new_sum = old_sum - outgoing_element + incoming_element.
+
+B. VARIABLE-SIZE (DYNAMIC) SLIDING WINDOW
+- The size of the window expands or shrinks depending on constraints.
+- Example problem: "Find the shortest subarray with a sum >= X."
+- Approach:
+  1. Expand the right pointer to include elements until the condition is met.
+  2. Shrink the left pointer to find the optimal/smallest size while the condition holds.
+
+3. RECOGNIZING THE PATTERN
+Look for these keywords in the problem description:
+- Subarray, Substring, Contiguous subsegment
+- Window of size K, K consecutive elements
+- Optimal (min/max) length or value meeting a criteria
+
+4. COMPLEXITY 
+- Naive Approach: O(N * K) or O(N^2) by checking all subarrays.
+- Sliding Window: O(N) Time Complexity because each element is visited at most twice.
+- Space Complexity: O(1) or O(K) if tracking frequencies or unique characters.
+
+5. CODE
+Fixed-Size Template:
+int current = 0;
+for(int i = 0; i < k; i++) current += arr[i];
+int max_val = current;
+for(int i = k; i < arr.length; i++) {
+    current += arr[i] - arr[i - k];
+    max_val = Math.max(max_val, current);
+}
+
+Variable-Size Template:
+int left = 0, max_len = 0;
+for(int right = 0; right < arr.length; right++) {
+    // add arr[right] to state
+    while(condition_violated) {
+        // remove arr[left] from state
+        left++;
+    }
+    max_len = Math.max(max_len, right - left + 1);
+}
+
+6. PRACTICE PROBLEMS
+- LeetCode 643: Maximum Average Subarray I (Fixed)
+- LeetCode 3: Longest Substring Without Repeating Characters (Variable)
+- LeetCode 209: Minimum Size Subarray Sum (Variable)
+- LeetCode 438: Find All Anagrams in a String (Fixed)
+- LeetCode 76: Minimum Window Substring (Variable)

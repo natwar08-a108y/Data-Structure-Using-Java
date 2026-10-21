@@ -82,3 +82,17 @@ Compare the middle element with its next neighbor to figure out which slope you 
 
 Termination:
 The search continues until start == end. At that exact point, both pointers point to the maximum peak element because they have converged on the single turning point.
+
+7. Rotated Binary Search: 
+Key Concepts:
+Definition: A rotated sorted array is a sorted array that has been shifted at a specific pivot point (0:29-1:29).
+The Challenge: Unlike a standard sorted array where you can always eliminate one half by comparing the target with the middle element, a rotated array requires first identifying which side is properly sorted (6:52-7:35).
+Efficiency: While a linear search takes O(n) time, this binary search approach optimizes performance to O(log n) time complexity by repeatedly narrowing down the search space (15:28-15:37).
+Core Algorithm Strategy:
+Calculate Mid: Find the middle element mid 
+Check: If arr[mid] == target, the element is found 
+Identify Sorted Half:
+If arr[low] <= arr[mid], the left half is sorted. Check if the target lies within that range 
+Otherwise, the right half is sorted. Check if the target lies within that range 
+Eliminate: Based on the range check, discard the half that cannot contain the target and repeat 
+If the entire array is exhausted without finding the target, the algorithm returns -1 

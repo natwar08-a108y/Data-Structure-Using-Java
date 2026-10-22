@@ -1,0 +1,81 @@
+BUCKET SORT
+============
+
+1. DEFINITION
+Bucket Sort is a distribution-based sorting algorithm. It distributes elements
+into several buckets, sorts each bucket individually, and then combines the
+buckets in order.
+
+The standard algorithm below assumes the input contains n values in the range
+[0, 1), and uses insertion sort to sort each bucket.
+
+2. PSEUDOCODE
+BUCKET-SORT(A)
+
+1. n = A.length
+2. Create an array B[0 ... n - 1] of empty lists.
+3. For i = 0 to n - 1:
+       Insert A[i] into B[floor(n * A[i])].
+4. For i = 0 to n - 1:
+       Sort B[i] using insertion sort.
+5. Concatenate B[0], B[1], ..., B[n - 1] in order.
+6. Return the sorted array.
+
+Note: This uses zero-based indexing. Since A[i] is in [0, 1), the bucket
+index floor(n * A[i]) is between 0 and n - 1. If the input can contain 1,
+the bucket-index formula needs special handling.
+
+3. HOW IT WORKS
+- Create n empty buckets.
+- Map each value to a bucket based on its value.
+- Sort the elements inside each bucket.
+- Concatenate the buckets from lowest index to highest index.
+- The result is sorted when the bucket ranges are ordered and each bucket
+  has been sorted correctly.
+
+4. EXAMPLE
+Input: [0.78, 0.17, 0.39, 0.26, 0.72, 0.94, 0.21, 0.12, 0.23, 0.68]
+Number of elements: n = 10
+
+Bucket index = floor(n * value)
+
+B[0]: []
+B[1]: [0.17, 0.12]       -> [0.12, 0.17]
+B[2]: [0.26, 0.21, 0.23] -> [0.21, 0.23, 0.26]
+B[3]: [0.39]             -> [0.39]
+B[4]: []
+B[5]: []
+B[6]: [0.68]             -> [0.68]
+B[7]: [0.78, 0.72]       -> [0.72, 0.78]
+B[8]: []
+B[9]: [0.94]             -> [0.94]
+
+Concatenated result:
+[0.12, 0.17, 0.21, 0.23, 0.26, 0.39, 0.68, 0.72, 0.78, 0.94]
+
+5. COMPLEXITY
+Best Case:    O(n)       when elements are distributed fairly evenly among
+                         buckets and insertion sort is efficient.
+Average Case: O(n)       under the usual assumption of a roughly uniform
+                         distribution over [0, 1).
+Worst Case:   O(n^2)     when many or all elements fall into one bucket and
+                         insertion sort must sort that bucket.
+
+Auxiliary Space: O(n)    for the buckets and their stored elements.
+
+6. STABILITY AND IN-PLACE PROPERTY
+- Stability depends on how elements are placed into buckets and how each
+  bucket is sorted. Using a stable insertion sort and preserving insertion
+  order when distributing equal keys makes Bucket Sort stable.
+- Bucket Sort is generally NOT in-place because it uses additional buckets
+  to store the elements.
+
+7. QUICK REVISION
+- Type: Distribution-based sorting algorithm.
+- Main steps: distribute -> sort each bucket -> concatenate.
+- Typical input assumption: values in [0, 1).
+- Average time: O(n) for a roughly uniform distribution.
+- Worst-case time: O(n^2) with insertion sort if all values enter one bucket.
+- Auxiliary space: O(n).
+- Stable: Can be stable, depending on implementation.
+- In-place: No, in the standard implementation.

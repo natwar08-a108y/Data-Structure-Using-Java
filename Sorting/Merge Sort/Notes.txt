@@ -1,0 +1,527 @@
+Approach:
+1. Divide array into 2 parts.
+2. Get both parts sorted via Recursion.
+3. Merge the Sorted Part.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Dry Run:
+                  [8, 3, 4, 12, 5, 6]
+                     /           \
+           [8, 3, 4]               [12, 5, 6]
+            /     \                 /      \
+        [8, 3]    [4]           [12, 5]    [6]
+        /   \                    /   \
+      [8]   [3]                [12]  [5]
+       \     /                  \     /
+        [3, 8]   [4]             [5, 12]   [6]
+           \     /                  \     /
+          [3, 4, 8]                [5, 6, 12]
+              \                       /
+                 [3, 4, 5, 6, 8, 12]
+
+Now compare: 8 & 3 merge them return upward 
+then compare 3, 8 with 4 rearrange then merge return upward 
+then compare 3, 4, 8 with its right sub part 5, 6, 12
+we have used 2 pointers appoarch to merge earlier small part then see its implementation in final merging 
+We will use an extra array to compare two subpart an store in it 
+whenever a subpart gets sorted merge them this way 
+ 
+          3, 4, 8          5, 6, 12
+Compare 3 & 5 - 3 add 
+Compare 4 & 5 - 4 add 
+Compare 8 & 5 - 5 add
+Compare 8 & 6 - 6 add 
+Compare 8 & 12 - 8 add
+First Subpart end & append the remaining part of subarray into final array 
+Final sorted array - 3, 4, 5, 6, 8, 12
+-----------------------------------------------------------------------------------------------------------------------------------------                
+MERGE SORT – TIME COMPLEXITY BREAKDOWN:
+
+Merge Sort divides the array into 2 equal halves recursively.
+
+N
+↓
+N/2 + N/2 = N
+↓
+N/4 + N/4 + N/4 + N/4 = N
+↓
+...
+↓
+1 + 1 + ... + 1 = N
+
+At every level:
+Total N elements are processed/merged.
+
+Number of levels:
+N → N/2 → N/4 → ... → 1
+
+Let number of levels = k
+
+N / 2^k = 1
+⇒ 2^k = N
+⇒ k log₂2 = log₂N
+⇒ k = log₂N
+
+Therefore,
+
+Work per level = O(N)
+Number of levels = O(log N)
+
+Total Time:
+T(N) = O(N) × O(log N)
+     = O(N log N)
+
+Hence:
+Best Case    = O(N log N)
+Average Case = O(N log N)
+Worst Case   = O(N log N)
+
+Space Complexity = O(N)
+-------------------------------------------------------------------------------------------------------------------------------
+RECURRENCE:
+T(n) = 2T(n/2) + (n - 1)
+
+Meaning:
+- 2 subproblems, each of size n/2
+- Extra work at each call = n - 1 ≈ n
+
+Recursion Tree:
+
+                 T(n)
+              /        \
+          T(n/2)      T(n/2)
+             ↓           ↓
+          T(n/4)      T(n/4)
+             ↓           ↓
+             ...
+             ↓
+             1
+
+At every level, total extra work is approximately:
+
+Level 0 → n
+Level 1 → n/2 + n/2 = n
+Level 2 → n/4 + n/4 + n/4 + n/4 = n
+...
+So, work per level = O(n)
+
+Number of levels:
+
+n / 2^k = 1
+⇒ 2^k = n
+⇒ k = log₂ n
+
+Therefore:
+
+T(n) = O(n) × O(log n)
+     = O(n log n)
+
+Hence:
+
+T(n) = Θ(n log n)
+
+NOTE:
+The integral method shown in the image is an alternative way
+to approximate the summation. It is not necessary to use it
+when the recursion-tree method is enough.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MERGE SORT IN-PLACE – DRY RUN
+
+Array:
+[8, 3, 4, 12, 5, 6]
+
+Index:
+ 0  1  2   3  4  5
+
+
+IMPORTANT:
+[s, e) means e is EXCLUSIVE.
+
+mergeSortInPlace(arr, 0, 6)
+means indices 0 to 5.
+
+
+1. FIRST DIVISION
+
+s = 0, e = 6
+m = (0 + 6) / 2 = 3
+
+[8, 3, 4 | 12, 5, 6]
+  0  1  2    3  4  5
+
+Left  = [0,3) = [8,3,4]
+Right = [3,6) = [12,5,6]
+
+First, LEFT side is completely sorted.
+Then RIGHT side is completely sorted.
+Finally, both are merged.
+
+
+2. SORT LEFT [0,3)
+
+mergeSortInPlace(arr, 0, 3)
+
+s = 0, e = 3
+m = (0 + 3) / 2 = 1
+
+[8 | 3,4]
+
+Left:
+[0,1) = [8]
+
+Size = 1
+→ return
+
+
+Right:
+[1,3) = [3,4]
+
+m = (1 + 3) / 2 = 2
+
+[3 | 4]
+
+Both have size 1
+→ return
+
+
+3. MERGE [3] AND [4]
+
+mergeInPlace(arr, 1, 2, 3)
+
+Left  = [3]
+Right = [4]
+
+i = 1
+j = 2
+k = 0
+
+Compare:
+3 vs 4
+
+3 is smaller.
+
+mix = [3]
+
+Now:
+i = 2
+k = 1
+
+Left side finished.
+
+Copy remaining 4:
+
+mix = [3,4]
+
+Copy mix back to arr starting from s = 1:
+
+arr[1] = 3
+arr[2] = 4
+
+Array:
+[8,3,4,12,5,6]
+
+
+4. MERGE [8] AND [3,4]
+
+mergeInPlace(arr, 0, 1, 3)
+
+Left  = [8]
+Right = [3,4]
+
+i = 0
+j = 1
+k = 0
+
+Compare:
+8 vs 3
+→ 3
+
+mix = [3]
+
+Compare:
+8 vs 4
+→ 4
+
+mix = [3,4]
+
+Right side finished.
+
+Copy remaining 8:
+
+mix = [3,4,8]
+
+Copy back starting from s = 0:
+
+arr[0] = 3
+arr[1] = 4
+arr[2] = 8
+
+Array becomes:
+
+[3,4,8,12,5,6]
+
+LEFT HALF IS NOW SORTED.
+
+
+5. SORT RIGHT [3,6)
+
+mergeSortInPlace(arr, 3, 6)
+
+s = 3
+e = 6
+
+m = (3 + 6) / 2 = 4
+
+[12 | 5,6]
+
+
+Left:
+[3,4) = [12]
+
+Size = 1
+→ return
+
+
+Right:
+[4,6) = [5,6]
+
+m = (4 + 6) / 2 = 5
+
+[5 | 6]
+
+Both size 1
+→ return
+
+
+6. MERGE [5] AND [6]
+
+mergeInPlace(arr, 4, 5, 6)
+
+Compare:
+5 vs 6
+→ 5
+
+mix = [5]
+
+Right side still has 6:
+
+mix = [5,6]
+
+Copy back starting from s = 4:
+
+arr[4] = 5
+arr[5] = 6
+
+Array:
+
+[3,4,8,12,5,6]
+
+
+7. MERGE [12] AND [5,6]
+
+mergeInPlace(arr, 3, 4, 6)
+
+Left  = [12]
+Right = [5,6]
+
+i = 3
+j = 4
+k = 0
+
+Compare:
+12 vs 5
+→ 5
+
+mix = [5]
+
+Compare:
+12 vs 6
+→ 6
+
+mix = [5,6]
+
+Right side finished.
+
+Copy remaining 12:
+
+mix = [5,6,12]
+
+Copy back starting from s = 3:
+
+arr[3] = 5
+arr[4] = 6
+arr[5] = 12
+
+Array becomes:
+
+[3,4,8,5,6,12]
+
+RIGHT HALF IS NOW SORTED.
+
+
+8. FINAL MERGE
+
+Now both halves are sorted:
+
+[3,4,8 | 5,6,12]
+
+mergeInPlace(arr, 0, 3, 6)
+
+Left  = [3,4,8]
+Right = [5,6,12]
+
+i = 0
+j = 3
+k = 0
+
+
+Comparison 1:
+3 vs 5
+→ 3
+
+mix = [3]
+i = 1
+
+
+Comparison 2:
+4 vs 5
+→ 4
+
+mix = [3,4]
+i = 2
+
+
+Comparison 3:
+8 vs 5
+→ 5
+
+mix = [3,4,5]
+j = 4
+
+
+Comparison 4:
+8 vs 6
+→ 6
+
+mix = [3,4,5,6]
+j = 5
+
+
+Comparison 5:
+8 vs 12
+→ 8
+
+mix = [3,4,5,6,8]
+i = 3
+
+Left side finished.
+
+
+Remaining right element:
+
+12
+
+mix = [3,4,5,6,8,12]
+
+
+Now copy mix back to original array:
+
+arr[0] = 3
+arr[1] = 4
+arr[2] = 5
+arr[3] = 6
+arr[4] = 8
+arr[5] = 12
+
+
+FINAL ARRAY:
+
+[3,4,5,6,8,12]
+
+
+COMPLETE FLOW:
+
+[8,3,4,12,5,6]
+
+        ↓ divide
+
+[8,3,4]       [12,5,6]
+
+        ↓ divide
+
+[8] [3,4]     [12] [5,6]
+
+        ↓ divide
+
+[8] [3] [4]   [12] [5] [6]
+
+        ↓ merge
+
+[8] [3,4]     [12] [5,6]
+
+        ↓ merge
+
+[3,4,8]       [5,6,12]
+
+        ↓ final merge
+
+[3,4,5,6,8,12]
+
+
+KEY POINTS:
+
+1. mergeSortInPlace() mainly DIVIDES the array.
+
+2. It uses s, m, e instead of creating separate left/right
+   arrays for every recursive call.
+
+3. When a portion has only one element:
+   e - s == 1
+   → return
+
+4. mergeInPlace() does the ACTUAL SORTING.
+
+5. i points to the left half.
+
+6. j points to the right half.
+
+7. k points to the temporary mix array.
+
+8. Compare arr[i] and arr[j].
+   Put the smaller element into mix.
+
+9. When one half finishes, copy the remaining elements
+   from the other half.
+
+10. Finally, copy mix back into arr[s ... e).
+
+MENTAL MODEL:
+
+DIVIDE
+  ↓
+SORT LEFT
+  ↓
+SORT RIGHT
+  ↓
+MERGE
+  ↓
+COPY BACK
+
+For this example:
+
+[8,3,4,12,5,6]
+        ↓
+[3,4,8] + [5,6,12]
+        ↓
+[3,4,5,6,8,12]
+
+
+TIME COMPLEXITY:
+O(n log n)
+
+SPACE:
+O(n) auxiliary space because mergeInPlace() creates:
+
+int[] mix = new int[e - s];
+
+The recursion stack adds O(log n).

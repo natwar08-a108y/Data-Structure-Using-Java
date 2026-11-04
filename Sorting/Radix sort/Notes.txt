@@ -1,0 +1,18 @@
+Run the loop as much as there are no. of largest digit
+Consider Array: 29, 83, 471, 36, 91, 8 
+Largest digit is 3 run the count sort 3 times.
+Start from least place and move to bigger place means from right to left 
+sort on basis of 1's place :
+471, 91, 83, 36, 8, 29
+
+Sort on the basis of 10's place:
+8, 29, 36, 471, 83, 91
+
+Sort on the basis of 100's place:
+8, 29, 36, 83, 91, 471 ---> Sorted
+
+We will use count sort at each level because digit is from 0 to 9 from right to left.
+
+First calculate max no. of digit and then check count sort for every place 
+Use built in function to calculate max:
+int max = Arrays.stream(arr).max().getAsInt.

@@ -1,0 +1,306 @@
+ Bit - Manipulation
+
+Operators
+
+1) AND
+
+a    b    a & b
+0    0      0
+0    1      0
+1    0      0
+1    1      1
+
+when you does & 1 with any number, digits remain the same.
+
+ 110010100
+&111111111
+-----------
+ 110010100
+
+2) OR
+
+a    b    a or b
+0    0      0
+0    1      1
+1    0      1
+1    1      1
+
+3) XOR (^)
+
+exclusive OR
+
+a    b    a ^ b
+0    0      0
+0    1      1
+1    0      1
+1    1      0
+
+Observations:
+a ^ 1 = a' (a's complement)
+a ^ 0 = a
+a ^ a = 0
+
+4) Complement(~):
+   a = 10110 then a's complement = 01001
+
+Number Systems:
+
+1) Decimal  ->  0, 1, 2, ... , 9          Base: 10
+
+(357)₁₀
+(10)₁₀
+
+2) Binary  ->  0 & 1                       Base: 2
+
+(10)₁₀ = (1010)₂
+(7)₁₀  = (111)₂
+
+3) Octal  ->  0, 1, 2, 3, ... , 7          Base: 8
+
+Decimal:
+0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+
+Octal:
+0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 20
+
+(9)₁₀ = (11)₈
+
+4) Hexadecimal
+
+0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F
+
+Base: 16
+
+(10)₁₀ = (A)₁₆
+(12)₁₀ = (C)₁₆
+
+Conversion:
+1) Decimal to base b
+
+Q:
+Convert (17)₁₀ to base 2.
+
+Keep dividing by base, take remainders until it is 0.
+
+(10001)₂ = (17)₁₀
+
+(17)₁₀ = (?)₈  =>  (21)₈
+
+2) Convert any base b to decimal.
+
+(10001)₂ = (?)₁₀
+
+Steps:
+Multiply each digit by the corresponding power of the base and add the results.
+
+(10001)₂ = (17)₁₀
+
+Q:
+(21)₈ = (?)₁₀
+
+= 2 × 8¹ + 1 × 8⁰
+= 2 × 8 + 1
+= (17)₁₀
+
+Continuing with operators:
+
+5) Left Shift Operator (<<)
+
+Theory:
+- Left shift moves all bits to the left by the specified number of positions.
+- Zeros are inserted from the right.
+- Each left shift by 1 multiplies the number by 2.
+- Each left shift by n multiplies the number by 2ⁿ.
+- Formula:
+  x << n = x × 2ⁿ
+
+Example:
+
+(10)₁₀ = (1010)₂
+
+1010 << 1 = 10100
+
+Verification:
+
+1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 0 × 2⁰
+= 16 + 4
+= 20
+
+Therefore,
+
+1010 << 1 = 10100
+(10)₁₀ << 1 = (20)₁₀
+
+General Point:
+
+a << 1 = 2a
+
+General point:
+
+a << b = a × 2ᵇ
+
+6) Right Shift Operator (>>)
+
+Theory:
+- Right shift moves all bits to the right by the specified number of positions.
+- For positive numbers, zeros are inserted from the left.
+- Each right shift by 1 divides the number by 2.
+- Each right shift by n divides the number by 2ⁿ.
+- Any fractional part is discarded (integer division).
+- Formula:
+  a >> b = a / 2ᵇ
+
+Q:
+
+0011100 >> 1 = 0001110
+
+(0011100)₂ = (28)₁₀
+(0001110)₂ = (14)₁₀
+
+General Point:
+
+a >> b = a / 2ᵇ
+
+Questions:
+
+1) Given a number n, find if it is odd or even.
+
+Point:
+Even numbers are divisible by 2.
+Find out if last bit is 0 or 1. 
+
+a. If it is 0 then rest number are in 2 to power 1,2,3..
+this implies that number is even. 
+b. Else it will be odd.
+
+But how we will calculate when we will & with 1 and we 
+know that if it gives 1 then last bit will be 1 otherwise 
+it will not give 1.
+Exa
+12 + 7
+
+(19)₁₀ = (10011)₂
+
+  1100
++ 0111
+------
+10011
+
+100  1   1
+16 + 2 + 1
+
+Note:
+
+- This will always be even.
+- Leaving this, every other bit is a power of 2.
+
+Hence:
+
+- If 2⁰ place == 1  →  odd
+- Otherwise         →  even
+
+LSB (Least Significant Bit)
+
+- LSB = rightmost bit.
+- LSB represents the 2⁰ place.
+
+1 → Odd
+0 → Even
+
+Q:
+
+n & 1 == 1  ⇒  Odd
+Otherwise   ⇒  Even
+
+Summary:
+
+To check whether a number is odd or even, perform:
+
+n & 1
+
+If the result is 1, the number is odd.
+If the result is 0, the number is even.
+
+QUESTION: Calculate the number that does not exist twice.
+arr = [2, 3, 4, 1, 2, 1, 3, 6, 4]
+
+We will use XOR property here:
+a ^ 0 = a
+a ^ a = 0
+
+Also, XOR follows associative property.
+A^B^A = A^A^B = 0^B = B 
+XOR all the numbers.
+Ans: 6 
+
+[-2, 3, 2, 4, -5, 5, -4] Same logic here.
+You can do simple addition here and answer will be sum of all.
+
+QUESTION: Manipulation with ith bit:
+
+Category-1: Find what is ith bit?
+Here, i is 5 find bit : 1010110
+Mask Concept:
+A mask is a number with only the required bit set to 1
+and all other bits set to 0.
+To create a mask for the nᵗʰ bit:
+
+mask = 1 << (n - 1) ---> Matlab n-1 no. of zeroes 1 se piche
+
+Example:
+
+1 << 4 = 10000
+
+Answer:
+
+n & (1 << (n - 1))
+
+If the result is 0, the nᵗʰ bit is 0.
+Otherwise, the nᵗʰ bit is 1.
+
+Q2. Set the iᵗʰ bit
+Set bit means 1.
+
+Goal:
+Turn the iᵗʰ bit to 1.
+
+0 → 1
+1 → 1
+
+Mask:
+
+mask = 1 << (i - 1)
+
+Operation:
+
+n | mask
+
+Reason:
+OR with 1 always makes that bit 1.
+
+Q3. Reset the iᵗʰ bit
+
+Goal:
+Turn the iᵗʰ bit to 0.
+
+1 → 0
+0 → 0
+
+Mask:
+
+mask = Complement of (1 << (i - 1))
+
+Operation:
+
+n & mask
+
+Reason:
+AND with 0 clears the selected bit, while AND with 1 leaves other bits unchanged.
+
+If using 0-based indexing (LSB = 0th bit), the formulas become:
+mask = 1 << i
+Find bit: n & (1 << i)
+Set bit: n | (1 << i)
+Reset bit: n & ~(1 << i)
+
+ 

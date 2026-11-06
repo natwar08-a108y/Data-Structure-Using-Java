@@ -1,0 +1,254 @@
+CHINESE REMAINDER THEOREM (CRT)
+
+1. Concept
+
+The Chinese Remainder Theorem (CRT) is used to find an integer x that satisfies multiple remainder conditions simultaneously.
+
+Example:
+x ≡ 2 (mod 3)
+x ≡ 3 (mod 5)
+
+The first condition means x leaves remainder 2 when divided by 3.
+The second condition means x leaves remainder 3 when divided by 5.
+
+Numbers leaving remainder 2 when divided by 3 are:
+2, 5, 8, 11, 14, 17, ...
+
+Among these numbers, 8 leaves remainder 3 when divided by 5.
+
+Therefore:
+x = 8
+
+Both conditions repeat every 3 × 5 = 15 numbers. Hence all solutions are:
+
+x ≡ 8 (mod 15)
+x = 8 + 15k, where k is any integer.
+
+2. Chinese Remainder Theorem
+
+Suppose we have a system of congruences:
+
+x ≡ a1 (mod m1)
+x ≡ a2 (mod m2)
+...
+x ≡ an (mod mn)
+
+If the moduli m1, m2, ..., mn are pairwise coprime, the system has a unique solution modulo their product.
+
+Pairwise coprime means the GCD of every pair of moduli is 1.
+
+For example, 3, 5 and 7 are pairwise coprime.
+
+Let:
+M = m1 × m2 × ... × mn
+
+The solution is unique modulo M, meaning all solutions differ by multiples of M.
+
+3. CRT Formula and Its Derivation
+
+First calculate:
+
+M = m1 × m2 × ... × mn
+
+For every modulus mi, calculate:
+
+Mi = M / mi
+
+Since the moduli are pairwise coprime, Mi and mi are coprime. Therefore, Mi has a modular inverse modulo mi.
+
+Let this inverse be yi:
+
+Mi × yi ≡ 1 (mod mi)
+
+The CRT formula is:
+
+x = (a1 × M1 × y1 + a2 × M2 × y2 + ... + an × Mn × yn) mod M
+
+Why does the formula work?
+
+Consider the term ai × Mi × yi for the ith congruence.
+
+For every other term, Mj contains the factor mi, so those terms become zero modulo mi.
+
+The ith term satisfies:
+
+ai × Mi × yi ≡ ai × 1 ≡ ai (mod mi)
+
+Therefore, the formula satisfies every congruence in the system.
+
+4. Complete Worked Example
+
+Solve:
+
+x ≡ 2 (mod 3)
+x ≡ 3 (mod 5)
+
+Step 1: Calculate the product of the moduli.
+
+M = 3 × 5 = 15
+
+Step 2: Calculate Mi for each modulus.
+
+M1 = M / 3 = 5
+M2 = M / 5 = 3
+
+Step 3: Calculate the modular inverses.
+
+For the first congruence:
+
+5 × y1 ≡ 1 (mod 3)
+
+Since 5 mod 3 = 2:
+
+2 × y1 ≡ 1 (mod 3)
+
+Taking y1 = 2 gives 2 × 2 = 4 ≡ 1 (mod 3).
+
+Therefore, y1 = 2.
+
+For the second congruence:
+
+3 × y2 ≡ 1 (mod 5)
+
+Taking y2 = 2 gives 3 × 2 = 6 ≡ 1 (mod 5).
+
+Therefore, y2 = 2.
+
+Step 4: Apply the CRT formula.
+
+x = (2 × 5 × 2 + 3 × 3 × 2) mod 15
+
+x = (20 + 18) mod 15
+
+x = 38 mod 15
+
+x = 8
+
+Verification:
+
+8 mod 3 = 2
+8 mod 5 = 3
+
+Hence, the smallest non-negative solution is 8.
+
+5. Java Implementation
+
+static long gcd(long a, long b) {
+    while (b != 0) {
+        long t = a % b;
+        a = b;
+        b = t;
+    }
+    return a;
+}
+
+static long modInverse(long a, long mod) {
+    long b = mod;
+    long x0 = 1;
+    long x1 = 0;
+
+    while (b != 0) {
+        long q = a / b;
+        long t = a % b;
+        a = b;
+        b = t;
+
+        t = x0 - q * x1;
+        x0 = x1;
+        x1 = t;
+    }
+
+    return (x0 % mod + mod) % mod;
+}
+
+static long crt(long[] a, long[] m) {
+    long M = 1;
+
+    for (long mod : m) {
+        if (gcd(M, mod) != 1) {
+            throw new IllegalArgumentException(
+                "Moduli must be pairwise coprime"
+            );
+        }
+        M *= mod;
+    }
+
+    long result = 0;
+
+    for (int i = 0; i < m.length; i++) {
+        long Mi = M / m[i];
+        long inv = modInverse(Mi, m[i]);
+        long term = a[i] * Mi % M;
+        term = term * inv % M;
+        result = (result + term) % M;
+    }
+
+    return (result + M) % M;
+}
+
+Example usage:
+
+long[] a = {2, 3};
+long[] m = {3, 5};
+
+System.out.println(crt(a, m));
+
+Output:
+8
+
+The implementation assumes positive moduli greater than 1, pairwise coprime moduli, and intermediate arithmetic that fits in long.
+
+6. Code Explanation
+
+gcd(a, b):
+Uses the Euclidean Algorithm to calculate the GCD. CRT requires every pair of moduli to be coprime.
+
+modInverse(a, mod):
+Uses the Extended Euclidean Algorithm to find x satisfying:
+
+a × x ≡ 1 (mod mod)
+
+The variables x0 and x1 track the coefficients needed to obtain the inverse. The final expression (x0 % mod + mod) % mod converts a negative remainder into a non-negative result.
+
+crt(a, m):
+
+M = Product of all moduli.
+The first loop checks coprimality and calculates M.
+
+Mi = M / m[i].
+This removes the current modulus from the total product.
+
+inv = modInverse(Mi, m[i]).
+This finds the inverse required by the CRT formula.
+
+term = a[i] * Mi % M.
+This calculates the first part of the current contribution.
+
+term = term * inv % M.
+This completes the current contribution.
+
+result = (result + term) % M.
+This adds the contribution to the answer while reducing it modulo M.
+
+Finally, (result + M) % M returns the smallest non-negative representative of the solution.
+
+7. Time and Space Complexity
+
+For n congruences, calculating the product and combining the terms requires O(n) iterations. Each modular inverse uses the Extended Euclidean Algorithm, which takes logarithmic time in the modulus.
+
+Under the usual arithmetic-operation model, the overall time complexity is approximately O(n log M), where M is the product of the moduli.
+
+Auxiliary space is O(1), excluding the input arrays.
+
+8. DSA Applications
+
+CRT is a specialized number-theory technique rather than a frequent standard LeetCode pattern. It is useful when a problem explicitly asks for a number satisfying multiple modular constraints.
+
+LeetCode 372. Super Pow:
+https://leetcode.com/problems/super-pow/
+
+This problem uses modular exponentiation, which is related to the prerequisite mathematics but does not directly require CRT.
+
+9. Key Takeaway
+
+CRT combines multiple remainder conditions into one congruence. When the moduli are pairwise coprime, calculate the product M, compute each Mi and its modular inverse, and combine the terms using the CRT formula.

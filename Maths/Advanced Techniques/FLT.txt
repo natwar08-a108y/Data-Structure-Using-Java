@@ -1,0 +1,115 @@
+FERMAT'S LITTLE THEOREM (FLT)
+
+1. Concept
+
+Fermat's Little Theorem simplifies calculations involving powers modulo a prime number.
+
+2. Statement
+
+If p is prime and p does not divide a:
+
+a^(p-1) ≡ 1 (mod p)
+
+Equivalent form:
+
+a^p ≡ a (mod p)
+
+The equivalent form also works when a is divisible by p.
+
+3. Conditions
+
+- p must be prime.
+- To use the first form or reduce the exponent modulo p-1, a must not be divisible by p.
+
+4. Example
+
+Calculate 2^100 mod 7.
+
+Since 7 is prime:
+
+2^6 ≡ 1 (mod 7)
+
+100 = 6*16 + 4
+
+2^100 = (2^6)^16 * 2^4
+
+2^100 ≡ 1^16 * 16 (mod 7)
+
+Answer = 2.
+
+5. Modular Inverse
+
+From:
+
+a^(p-1) ≡ 1 (mod p)
+
+We obtain:
+
+a^(-1) ≡ a^(p-2) (mod p)
+
+This works when p is prime and a is not divisible by p.
+
+Example:
+
+Inverse of 3 modulo 7 = 3^5 mod 7 = 5.
+
+Verification: 3*5 mod 7 = 1.
+
+6. Java Code
+
+static long modPow(long a, long b, long mod) {
+    long result = 1;
+    a %= mod;
+
+    while (b > 0) {
+        if ((b & 1) == 1) {
+            result = result * a % mod;
+        }
+
+        a = a * a % mod;
+        b >>= 1;
+    }
+
+    return result;
+}
+
+static long fermat(long a, long p, long b) {
+    if (p <= 1 || a % p == 0) {
+        throw new IllegalArgumentException();
+    }
+
+    b %= (p - 1);
+    return modPow(a, b, p);
+}
+
+7. Code Explanation
+
+- result stores the answer being calculated.
+- a %= mod reduces the base before calculations.
+- (b & 1) == 1 checks whether the exponent is odd.
+- If odd, multiply result by the current base.
+- a = a*a % mod squares the base.
+- b >>= 1 halves the exponent.
+- b %= p-1 reduces the exponent using Fermat's theorem.
+- modPow calculates the remaining power efficiently.
+
+The prime modulus requirement is assumed by fermat(); the method does not test primality.
+
+8. Complexity
+
+Binary exponentiation: O(log b) time and O(1) auxiliary space.
+
+9. Applications
+
+- Large modular powers.
+- Modular inverse calculation.
+- Modular division.
+- Combinatorics under a prime modulus.
+
+10. Related LeetCode Problems
+
+372. Super Pow
+https://leetcode.com/problems/super-pow/
+
+1922. Count Good Numbers
+https://leetcode.com/problems/count-good-numbers/

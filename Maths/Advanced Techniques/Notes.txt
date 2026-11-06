@@ -1,0 +1,53 @@
+Properties of modulo (%):
+* (a + b) % m = ((a % m) + (b % m)) % m
+* (a - b) % m = ((a % m) - (b % m) + m) % m
+* (a x b) % m = ((a % m) x (b % m)) % m
+* (a / b) % m = ((a % m) x (b^(-1) % m)) % m
+
+(b^(-1) % m) => multiplicative modulo inverse (MMI)
+
+x:
+(6 × y) % 7 = 1
+y = MMI for 6
+∴ y = 6
+(6 × 6) % 7 = 36 % 7 = 1
+
+MMI = b⁻¹ % m means that b & m are co-primes.
+* (a % m) % m = a % m
+* m^x % m = 0   ∀ x ∈ +ve integers.
+
+Extra:
+If p is a prime no. which is not a divisor of b,
+then
+ab⁻¹ % p = a % p
+due to Fermat's Little Theorem.
+
+Euclid's Algorithm:
+
+gcd(a, b) = gcd(rem(b, a), a)
+
+gcd(105, 224)
+= gcd(rem(224, 105), 105)
+= gcd(14, 105)
+
+Why?
+
+105x + 224y
+
+↓
+
+14x + 105y
+
+Why subtract?
+
+i.e. because the gcd of (105, 224)
+also divides a linear combination
+of 105 & 224.
+
+Ex:
+
+224 − 2 × 105 = 14 (rem)
+
+Formula:
+
+LCM(a, b) = (a × b) / HCF(a, b)

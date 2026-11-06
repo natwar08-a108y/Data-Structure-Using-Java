@@ -1,0 +1,215 @@
+Linear Diophantine Equations
+
+The Mathematical Core (FCS)
+
+A polynomial equation with integer coefficients where we only
+look for integer solutions.
+
+The linear version is:
+
+ax + by = c
+
+
+Condition for Solvability:
+
+A solution exists if and only if:
+
+gcd(a, b) | c
+
+If gcd(a, b) does not divide c, there are 0 integer solutions.
+
+
+Finding the General Solution:
+
+If you find a baseline particular solution (x₀, y₀)
+using the Extended Euclidean Algorithm, all other infinite
+solutions are given by:
+
+x = x₀ + k × (b / gcd(a, b))
+
+y = y₀ - k × (a / gcd(a, b))
+
+where k is any integer.
+
+Linear Diophantine Equation — Example
+
+Suppose:
+
+6x + 9y = 15
+
+We want integer values of x and y.
+
+
+1. Check whether a solution exists
+
+gcd(6, 9) = 3
+
+Since:
+
+3 | 15
+
+integer solutions exist.
+
+
+2. Find one particular solution
+
+Try y = 1:
+
+6x + 9(1) = 15
+
+6x + 9 = 15
+
+6x = 6
+
+x = 1
+
+Therefore:
+
+x₀ = 1
+y₀ = 1
+
+Check:
+
+6(1) + 9(1) = 15
+
+
+3. Find the general solution
+
+Formula:
+
+x = x₀ + k × (b / gcd(a,b))
+
+y = y₀ - k × (a / gcd(a,b))
+
+Here:
+
+a = 6
+b = 9
+gcd(a,b) = 3
+
+Therefore:
+
+x = 1 + k × (9/3)
+y = 1 - k × (6/3)
+
+So:
+
+x = 1 + 3k
+y = 1 - 2k
+
+where k is any integer.
+
+
+4. Different values of k
+
+k = 0:
+
+x = 1
+y = 1
+
+Solution:
+
+(1, 1)
+
+
+k = 1:
+
+x = 4
+y = -1
+
+Solution:
+
+(4, -1)
+
+
+k = -1:
+
+x = -2
+y = 3
+
+Solution:
+
+(-2, 3)
+
+
+k = 2:
+
+x = 7
+y = -3
+
+Solution:
+
+(7, -3)
+
+
+5. Verification
+
+For k = 1:
+
+6(4) + 9(-1)
+
+= 24 - 9
+
+= 15
+
+Therefore, (4, -1) is also a valid solution.
+
+
+6. Why does the formula work?
+
+Start with:
+
+ax + by = c
+
+Substitute:
+
+x = x₀ + k(b/g)
+
+y = y₀ - k(a/g)
+
+where:
+
+g = gcd(a,b)
+
+Then:
+
+a[x₀ + k(b/g)] + b[y₀ - k(a/g)]
+
+Expand:
+
+ax₀ + abk/g + by₀ - abk/g
+
+The extra terms cancel:
+
++abk/g - abk/g = 0
+
+Therefore:
+
+ax₀ + by₀ = c
+
+So every integer value of k gives another integer solution.
+
+
+Key Idea:
+
+Once one particular solution (x₀, y₀) is found, all
+integer solutions are:
+
+x = x₀ + k(b/g)
+
+y = y₀ - k(a/g)
+
+where:
+
+g = gcd(a,b)
+
+and k can be any integer.
+
+
+Connection with Extended Euclidean Algorithm:
+
+The Extended Euclidean Algorithm helps us find the
+initial particular solution (x₀, y₀).
+
+Then the general-solution formula gives all other
+integer solutions.

@@ -1,0 +1,204 @@
+> Divisibility: 
+An integer a divides an integer b (written as a | b ) if there exists an integer c such that b = a X c.
+
+> Fundamental Theorem of Arithmetic (FTA):
+Every integer n > 1 can be represented uniquely as a product of prime numbers, up to the order of the prime factors.
+
+Canonical Form: Any integer n can be written as:
+
+    n = (p1^a1) · (p2^a2) · ... · (pk^ak)
+
+where p1 < p2 < ... < pk are distinct prime numbers, and a_i >= 1.
+
+> Applications of FTA:
+1. Total Number of Divisors: d(n):
+A/Q to FTA n can be broken down in primes as: 
+n = (p1^a1) · (p2^a2) · ... · (pk^ak)
+
+Divisor d of n can only be made from these prime combo:
+d = (p1^b1) · (p2^b2) · ... · (pk^bk)
+
+bi -
+For p1, b1 can be anything from 0 to a1 so there are exactly (a1 + 1) choices
+For p2, b2 can be anything from 0 to a2 so there are exactly (a2 + 1) choices
+....
+Total no. of divisor can be :
+d(n) = (a1 + 1)(a2 + 1)...(ak + 1)
+
+2. Sum of Divisors: s(n)
+s(n) = (1 + p1 + p1^2 + ... + p1^a1) x (1 + p2 + p2^2 + ... + p2^a2) x (1 + pk + pk^2 + ... + pk^ak)
+So, Product of GP:
+s(n) = ∏(pᵢ^(aᵢ+1) − 1) / (pᵢ − 1)
+        i=1 to k
+
+> Euclidean Algo:
+The Euclidean Algorithm is based on the principle that:
+gcd (a,b)=gcd (b,a (mod b))
+This process is repeated until the remainder becomes 0. The last non-zero remainder is the gcd 
+
+> Extended Euclidean Algorithm 
+Bézout's Identity states that if g = gcd(a,b) then there
+exist integers x and y such that: 
+  ax + by = g
+  calculates both gcd(a,b) & coefficients(x,y)
+
+> Mathematical derivation for the Extended Euclidean Algorithm coefficient update:
+How it works mathematically (Derivation & Recurrence)
+
+When we compute gcd(a, b), it can be rewritten as:
+
+gcd(a, b) = gcd(b, a mod b)
+
+Let the recursive step be represented as:
+
+b × x₁ + (a mod b) × y₁ = g
+
+Substitute:
+
+a mod b = a − ⌊a/b⌋ × b
+
+Therefore:
+
+b × x₁ + (a − ⌊a/b⌋ × b) × y₁ = g
+
+Rearrange the terms to align with a and b:
+
+a × y₁ + b × (x₁ − ⌊a/b⌋ × y₁) = g
+
+Comparing this with:
+
+a × x + b × y = g
+
+we get our updating relations:
+
+x = y₁
+
+y = x₁ − ⌊a/b⌋ × y₁
+
+Example: Extended Euclidean Algorithm Derivation
+
+Find x and y such that:
+
+30x + 20y = gcd(30, 20)
+
+Step 1: Apply Euclidean Algorithm
+
+gcd(30, 20)
+= gcd(20, 30 mod 20)
+= gcd(20, 10)
+= gcd(10, 20 mod 10)
+= gcd(10, 0)
+
+Therefore:
+
+g = 10
+
+
+Step 2: Consider the recursive result
+
+For:
+
+gcd(b, a mod b)
+
+the recursive result is:
+
+b × x₁ + (a mod b) × y₁ = g
+
+For our example:
+
+a = 30
+b = 20
+a mod b = 10
+
+So:
+
+20 × x₁ + 10 × y₁ = 10
+
+One valid solution is:
+
+x₁ = 0
+y₁ = 1
+
+Therefore:
+
+20(0) + 10(1) = 10
+
+
+Step 3: Replace a mod b
+
+We know:
+
+a mod b = a - floor(a/b) × b
+
+For our example:
+
+30 mod 20
+= 30 - floor(30/20) × 20
+= 30 - 1 × 20
+= 10
+
+Therefore:
+
+b × x₁ + (a - floor(a/b) × b) × y₁ = g
+
+
+Step 4: Rearrange
+
+b × x₁ + a × y₁ - floor(a/b) × b × y₁ = g
+
+Group the terms:
+
+a × y₁ + b × (x₁ - floor(a/b) × y₁) = g
+
+
+Step 5: Compare with the required form
+
+Required:
+
+a × x + b × y = g
+
+We have:
+
+a × y₁ + b × (x₁ - floor(a/b) × y₁) = g
+
+Therefore:
+
+x = y₁
+
+y = x₁ - floor(a/b) × y₁
+
+
+Step 6: Put values
+
+x₁ = 0
+y₁ = 1
+floor(30/20) = 1
+
+Therefore:
+
+x = y₁
+  = 1
+
+y = x₁ - floor(a/b) × y₁
+  = 0 - 1 × 1
+  = -1
+
+
+Step 7: Verify
+
+30x + 20y = 10
+
+30(1) + 20(-1)
+= 30 - 20
+= 10
+
+Therefore:
+
+x = 1
+y = -1
+
+Final result:
+
+30(1) + 20(-1) = 10
+
+gcd(30, 20) = 10

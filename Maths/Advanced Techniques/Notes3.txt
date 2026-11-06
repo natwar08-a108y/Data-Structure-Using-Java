@@ -1,0 +1,39 @@
+Congruence Relation: Let m be a positive integer.
+Two integers a and b are said to be congruent modulo m if their
+difference (a - b) is perfectly divisible by m.
+
+a ≡ b (mod m) ⇔ m | (a − b)
+a & b leave the exact same remainder when divided by m.
+
+Residue Classes:
+Modulo m divides the infinite universe of integers into exactly
+m distinct sets called complete residue classes.
+
+For a modulus m, the standard residue classes are:
+[0], [1], [2], ..., [m - 1]
+Where:
+[r] = {..., r - 2m, r - m, r, r + m, r + 2m, ...}
+
+Modular Multiplicative Inverse:
+The modular inverse of an integer a modulo m is an integer x such that:
+ax ≡ 1 (mod m)
+
+The Golden Rule:
+The modular inverse x exists if and only if:
+gcd(a, m) = 1
+i.e., a and m are coprime.
+
+How to solve:
+We find the modular inverse using the Extended Euclidean
+Algorithm.
+
+Since:
+gcd(a, m) = 1
+
+Bézout's identity states:
+ax + my = 1
+
+Taking modulo m on both sides drops the my term, giving:
+ax ≡ 1 (mod m)
+
+Thus, the coefficient x is our inverse!

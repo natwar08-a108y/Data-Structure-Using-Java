@@ -1,0 +1,407 @@
+Strings & StringBuilder
+
+1) Stack Memory:
+When we declare a variable.
+Eg:
+    int a = 10;
+
+So, here the reference variable is stored in stack memory.
+
+2) Heap Memory:
+Reference variable stored in stack memory is pointing
+to the object of that variable, which is stored in heap memory.
+
+Example:
+    int a = 10;
+
+            Stack                    Heap
+        +-----------+           +-----------+
+        |     a     | --------> |    10     |
+        +-----------+           +-----------+
+      (stores reference)       (stores object)
+
+3) Memory Allocation:
+Memory allocation specifies the memory address to a program.
+
+There are two types of memory:
+a) Stack Memory
+b) Heap Memory
+
+4 a) Static Memory Allocation:
+It performs type checking at compile time.
+Here, errors will show at compile time.
+declare datatype before you use it.
+More control Runtime errors are reduced.
+
+==============================
+4) DYNAMIC MEMORY ALLOCATION
+==============================
+
+Dynamic Memory Allocation is performed during runtime.
+
+Properties:
+
+• Memory is allocated while the program is executing.
+
+• Errors may not be detected during compile time.
+  They may occur during runtime.
+
+• Objects are created dynamically using the new keyword.
+
+• It provides flexibility because memory is allocated only when required.
+
+• It may use more memory and can be slightly slower than static allocation.
+
+Example:
+
+Student s = new Student();
+
+Here,
+s → Reference variable (Stack Memory)
+new Student() → Object (Heap Memory)
+
+==============================
+5) GARBAGE COLLECTION
+==============================
+
+Garbage Collection is the process of automatically removing
+unused objects from Heap Memory.
+
+Properties:
+
+• More than one reference variable can point to the same object.
+
+Example:
+
+Student s1 = new Student();
+Student s2 = s1;
+
+Both s1 and s2 point to the same object.
+
+• If changes are made using one reference, the changes are visible
+through all other references pointing to the same object.
+
+Example:
+
+s1.name = "Radhe";
+
+System.out.println(s2.name);
+
+Output:
+Radhe
+
+• If an object has no reference variable pointing to it,
+it becomes eligible for Garbage Collection.
+
+Example:
+
+Student s = new Student();
+s = null;
+
+Now the object has no reference, so it is eligible for
+Garbage Collection.
+
+• Garbage Collection is performed automatically by the JVM.
+Programmers cannot destroy objects manually.
+
+• The JVM decides when to run the Garbage Collector.
+it does not guarantee that Garbage Collection will run immediately.
+
+==============================
+WHAT IS A STRING?
+==============================
+
+A String is a sequence of characters enclosed in double quotes.
+
+Example:
+
+"Radhe"
+"Java"
+"Kunal"
+
+==============================
+DEFINITION
+==============================
+
+• A String is a non-primitive (reference) data type in Java.
+
+• String is a class present in the java.lang package.
+
+• Every String you create is actually an object of the String class.
+
+• String is one of the most commonly used classes in Java.
+
+==============================
+SYNTAX
+==============================
+
+String name = "Radha";
+
+System.out.println(name);
+
+Output:
+Radha
+
+==============================
+CONCEPTS
+==============================
+
+1. STRING CONSTANT POOL (SCP)
+==============================
+
+The String Constant Pool is a special memory area inside the Heap Memory.
+
+It stores String literals to avoid creating duplicate objects.
+
+==============================
+WHY STRING CONSTANT POOL?
+==============================
+
+Suppose we write:
+
+String a = "Kunal";
+String b = "Kunal";
+
+Without the String Pool:
+
+Two separate objects would be created,
+wasting Heap Memory.
+
+With the String Pool:
+
+Only one object "Kunal" is created.
+
+Both a and b point to the same object.
+
+Diagram:
+
+           Stack                    String Pool (Heap)
+
+        +-------+                  +-----------+
+        |   a   | ---------------> |  "Kunal"  |
+        +-------+                  +-----------+
+             |
+             |
+        +-------+
+        |   b   |
+        +-------+
+
+==============================
+ADVANTAGES OF STRING POOL
+==============================
+
+• Saves Heap Memory.
+
+• Avoids duplicate String objects.
+
+• Improves performance.
+
+• Faster comparison because objects can be reused.
+
+==============================
+IMPORTANT POINTS
+==============================
+
+✓ String literals are stored in the String Constant Pool.
+
+✓ The String Constant Pool is a part of Heap Memory.
+
+✓ Identical String literals share the same object.
+
+✓ String objects created using new keyword are NOT stored directly in the String Pool.
+
+Example:
+
+String a = "Java";
+
+String b = "Java";
+
+String c = new String("Java");
+
+Here,
+
+a and b point to the same object in the String Pool.
+
+c points to a different object in Heap Memory.
+
+==============================
+MEMORY REPRESENTATION
+==============================
+
+Stack                         Heap
+
+a -------------------------> "Java" (String Pool)
+
+b -------------------------> "Java" (Same Object)
+
+c -------------------------> "Java" (New Object)
+
+==============================
+INTERVIEW QUESTION
+==============================
+
+Q. Why does Java use a String Constant Pool?
+
+Answer:
+
+To save memory by storing only one copy of identical String literals.
+Whenever the same literal is used again, Java reuses the existing object instead of creating a new one.
+
+==============================
+STRING IMMUTABILITY
+==============================
+
+Use Case:
+The String Constant Pool (SCP) makes Java programs more memory-efficient
+by reusing identical String literals.
+
+==============================
+IMPORTANT NOTE
+==============================
+
+If multiple reference variables point to the same String object,
+modifying the object through one reference should NOT affect the others.
+
+Why?
+
+Because Strings in Java are Immutable.
+
+==============================
+WHAT IS IMMUTABILITY?
+==============================
+
+Immutability means that once a String object is created,
+its content cannot be changed.
+
+If you perform an operation that appears to modify a String,
+Java creates a NEW String object instead of changing the existing one.
+
+Example:
+
+String name = "Kunal";
+
+name = "Rahul";
+
+Here,
+
+The object "Kunal" is NOT modified.
+
+A new object "Rahul" is created, and the reference variable
+name now points to the new object.
+
+==============================
+MEMORY REPRESENTATION
+==============================
+
+Initially
+
+Stack                      Heap (String Pool)
+
+name -------------------> "Kunal"
+
+After
+
+name = "Rahul";
+
+Stack                      Heap (String Pool)
+
+name -------------------> "Rahul"
+
+                           "Kunal"
+
+The object "Kunal" still exists until no reference points to it.
+
+==============================
+WHY ARE STRINGS IMMUTABLE?
+==============================
+
+Suppose many reference variables point to the same String.
+
+String a = "Kunal";
+String b = "Kunal";
+String c = "Kunal";
+String d = "Kunal";
+
+Memory
+
+Stack                     String Pool
+
+a ----------------------\
+b -----------------------\
+c ------------------------> "Kunal"
+d -----------------------/
+
+Only one object is created.
+
+Now imagine if a changes the String:
+
+a = a.replace("K","S");
+
+If Strings were mutable,
+
+Every reference (b, c, d) would also see the modified value,
+which would be incorrect.
+
+Therefore Java creates a NEW object instead of modifying
+the existing one.
+
+==============================
+ADVANTAGES OF IMMUTABILITY
+==============================
+
+• Memory optimization through String Pool.
+
+• Security (important for passwords, URLs, file paths, etc.).
+
+• Thread-safe because objects cannot be modified.
+
+• Faster performance due to object reuse.
+
+• Reliable hashing (used in HashMap and HashSet).
+
+==============================
+IMPORTANT POINTS
+==============================
+
+✓ String objects cannot be modified after creation.
+
+✓ Every modification creates a new String object.
+
+✓ Original String object remains unchanged.
+
+✓ Immutability makes the String Pool possible.
+
+✓ String is declared as a final class, so it cannot be inherited.
+
+==============================
+EXAMPLE
+==============================
+
+String s = "Java";
+
+s.concat(" Programming");
+
+System.out.println(s);
+
+Output:
+
+Java
+
+Reason:
+
+concat() creates a new String,
+but since its result is not assigned back,
+the original String remains unchanged.
+
+Correct Way:
+
+String s = "Java";
+
+s = s.concat(" Programming");
+
+System.out.println(s);
+
+Output:
+
+Java Programming
+

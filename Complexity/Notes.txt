@@ -1,0 +1,729 @@
+
+                         TIME AND SPACE COMPLEXITY
+
+1. INTRODUCTION TO TIME COMPLEXITY
+=====
+Time complexity is NOT the actual time taken by different machines to execute a particular algorithm.
+
+Instead, it tells us how the execution time of an algorithm grows as the input size (N) increases.
+
+For example:
+- O(1)       : Constant time
+- O(log N)   : Logarithmic time
+- O(N)       : Linear time
+- O(N log N) : Linearithmic time
+- O(N²)      : Quadratic time
+- O(N³)      : Cubic time
+- O(2^N)     : Exponential time
+- O(N!)      : Factorial time
+
+Refer to the image:
+Time Complexity Graph.png
+
+IMPORTANT POINTS REGARDING COMPLEXITY
+========
+1. Always consider the Worst Case when analysing an algorithm's upper bound.
+
+Why?
+Because worst-case analysis tells us the maximum growth in operations for a given input size.
+
+Example:
+Searching for an element in an array:
+- Best Case: O(1)
+- Worst Case: O(N)
+
+2. Always consider large input sizes.
+
+We are interested in how an algorithm behaves when N becomes very large.
+
+3. Ignore constant multipliers and constant additions.
+
+Example:
+O(3N + 8) = O(N)
+
+O(2N) = O(N)
+
+O(100N) = O(N)
+
+We do not care about the exact number of operations. We care about the growth rate.
+
+4. Ignore less dominating terms.
+
+Example:
+O(N³ + N² + log N)
+
+When N becomes very large, N³ dominates the other terms.
+
+Therefore:
+O(N³ + N² + log N) = O(N³)
+
+Another Example:
+O(N² + 5N + 10) = O(N²)
+
+5. Always identify the input size correctly.
+
+For example:
+- Single loop over N elements: O(N)
+- Nested loops of N elements each: O(N²)
+- Repeatedly dividing N by 2: O(log N)
+
+
+2. ASYMPTOTIC NOTATIONS
+
+Asymptotic notations describe the growth rate of an algorithm as input size approaches infinity.
+
+There are FIVE important notations:
+
+1. Big-O (O)
+2. Big-Omega (Ω)
+3. Big-Theta (Θ)
+4. Little-o (o)
+5. Little-omega (ω)
+
+
+A. BIG-O NOTATION (O)
+======
+Definition:
+Big-O notation represents the asymptotic upper bound of a function.
+
+It tells us that the growth of f(N) does not exceed a constant multiple of g(N), for sufficiently large N.
+
+Mathematical Definition:
+
+f(N) = O(g(N))
+
+If there exist positive constants C and N₀ such that:
+
+0 ≤ f(N) ≤ C × g(N), for all N ≥ N₀.
+
+Limit Method:
+
+lim (N → infinity) [f(N) / g(N)] < infinity
+
+Example:
+
+f(N) = 6N³ + 3N + 5
+g(N) = N³
+
+lim (N → infinity) [(6N³ + 3N + 5) / N³]
+
+= lim (N → infinity) [6 + 3/N² + 5/N³]
+
+= 6 + 0 + 0
+
+= 6
+
+Since 6 is finite:
+
+f(N) = O(N³)
+
+IMPORTANT:
+Big-O is an upper bound, not automatically the exact worst-case complexity. Worst-case refers to the input case being analysed.
+
+
+B. BIG-OMEGA NOTATION (Ω)
+==========
+Definition:
+Big-Omega represents the asymptotic lower bound of a function.
+
+It tells us that f(N) grows at least as fast as a constant multiple of g(N), for sufficiently large N.
+
+Mathematical Definition:
+
+f(N) = Ω(g(N))
+
+If there exist positive constants C and N₀ such that:
+
+f(N) ≥ C × g(N), for all N ≥ N₀.
+
+Limit Method:
+
+lim (N → infinity) [f(N) / g(N)] > 0
+
+Example:
+
+f(N) = 6N³ + 3N + 5
+g(N) = N³
+
+lim (N → infinity) [f(N) / g(N)] = 6
+
+Since 6 > 0:
+
+f(N) = Ω(N³)
+
+
+C. BIG-THETA NOTATION (Θ)
+==========
+Definition:
+Big-Theta represents the tight asymptotic bound.
+
+It means that the function has BOTH an upper bound and a lower bound of the same order.
+
+Mathematical Definition:
+
+f(N) = Θ(g(N))
+
+If there exist positive constants C₁, C₂ and N₀ such that:
+
+C₁g(N) ≤ f(N) ≤ C₂g(N)
+
+for all N ≥ N₀.
+
+Limit Method:
+
+0 < lim (N → infinity) [f(N) / g(N)] < infinity
+
+Example:
+
+f(N) = 6N² + 3N + 5
+
+g(N) = N²
+
+lim (N → infinity) [f(N) / g(N)] = 6
+
+Therefore:
+
+f(N) = Θ(N²)
+
+IMPORTANT QUESTION:
+
+What if an algorithm has both upper and lower bounds equal to N²?
+
+Answer:
+
+O(N²) and Ω(N²)
+
+Combining both:
+
+Θ(N²)
+
+
+D. LITTLE-o NOTATION (o)
+=========
+Definition:
+Little-o represents a STRICT asymptotic upper bound.
+
+It means f(N) grows strictly slower than g(N).
+
+Mathematical Definition:
+
+f(N) = o(g(N))
+
+Limit Method:
+
+lim (N → infinity) [f(N) / g(N)] = 0
+
+Example:
+
+f(N) = N²
+g(N) = N³
+
+lim (N → infinity) [N² / N³]
+
+= lim (N → infinity) [1/N]
+
+= 0
+
+Therefore:
+
+N² = o(N³)
+
+Difference:
+
+Big-O:
+f(N) = O(g(N))
+f(N) is bounded above by g(N), up to a constant factor.
+
+Little-o:
+f(N) = o(g(N))
+f(N) grows strictly slower than g(N).
+
+
+E. LITTLE-OMEGA NOTATION (ω)
+Definition:
+Little-omega represents a STRICT asymptotic lower bound.
+
+It means f(N) grows strictly faster than g(N).
+
+Mathematical Definition:
+
+f(N) = ω(g(N))
+
+Limit Method:
+
+lim (N → infinity) [f(N) / g(N)] = infinity
+
+Example:
+
+f(N) = N³
+g(N) = N²
+
+lim (N → infinity) [N³ / N²]
+
+= lim (N → infinity) N
+
+= infinity
+
+Therefore:
+
+N³ = ω(N²)
+
+
+SUMMARY OF ASYMPTOTIC NOTATIONS
+==
+Big-O (O)       : Upper Bound
+Big-Omega (Ω)   : Lower Bound
+Big-Theta (Θ)   : Tight Bound
+Little-o (o)    : Strict Upper Bound
+Little-omega(ω) : Strict Lower Bound
+
+
+3. SPACE COMPLEXITY AND AUXILIARY SPACE
+
+SPACE COMPLEXITY:
+
+Space complexity is the total memory required by an algorithm with respect to the input size.
+
+It includes:
+1. Input Space
+2. Auxiliary Space
+
+AUXILIARY SPACE:
+
+Auxiliary space is the extra or temporary memory used by an algorithm during execution.
+
+Example:
+
+int sum(int arr[], int N) {
+    int total = 0;
+
+    for(int i = 0; i < N; i++) {
+        total += arr[i];
+    }
+
+    return total;
+}
+
+Here:
+- Input array occupies O(N) space.
+- Variables total and i occupy O(1) auxiliary space.
+
+Therefore:
+Auxiliary Space = O(1)
+
+Total Space Complexity = O(N)
+
+IMPORTANT:
+In algorithm analysis, auxiliary space is often reported separately from input storage.
+
+
+4. COMPLEXITY ANALYSIS OF LOOPS
+
+EXAMPLE 1: NESTED LOOP WITH VARIABLE INCREMENT
+
+Consider:
+
+for(i = 1; i <= N; ) {
+
+    for(j = 1; j <= K; j++) {
+        // Operation taking time T
+    }
+
+    i = i + K;
+}
+
+STEP 1: Analyse the inner loop.
+
+The inner loop runs K times.
+
+Time Complexity = O(K × T)
+
+STEP 2: Analyse the outer loop.
+
+Values of i:
+
+1, 1+K, 1+2K, 1+3K, ..., 1+xK
+
+Let x be the number of iterations.
+
+1 + xK ≤ N
+
+xK ≤ N - 1
+
+x ≤ (N - 1)/K
+
+Therefore, the outer loop runs approximately N/K times.
+
+STEP 3: Calculate total complexity.
+
+Total Time:
+
+O(K × T × N/K)
+
+= O(N × T)
+
+If each operation takes constant time:
+
+T = O(1)
+
+Final Answer:
+
+O(N)
+
+IMPORTANT:
+This is an example where the inner loop runs K times, but the outer loop runs N/K times.
+
+The K terms cancel each other.
+
+
+5. SORTING ALGORITHMS AND THEIR COMPLEXITIES
+
+A. BUBBLE SORT
+
+Best Case       : O(N)
+Average Case    : O(N²)
+Worst Case      : O(N²)
+Auxiliary Space : O(1)
+
+Reason:
+- Best case occurs when the array is already sorted and an optimized version uses a swap flag.
+- Worst case occurs when elements are in reverse order.
+
+B. SELECTION SORT
+
+Best Case       : O(N²)
+Average Case    : O(N²)
+Worst Case      : O(N²)
+Auxiliary Space : O(1)
+
+Reason:
+Selection Sort always searches the entire unsorted portion to find the minimum element.
+
+Therefore, the number of comparisons remains approximately fixed regardless of the initial arrangement.
+
+Interesting Point:
+Selection Sort performs at most O(N) swaps.
+
+It is useful when memory writes are costly.
+
+C. INSERTION SORT
+
+Best Case       : O(N)
+Average Case    : O(N²)
+Worst Case      : O(N²)
+Auxiliary Space : O(1)
+
+Reason:
+- Best case: Array is already sorted.
+- Worst case: Array is in reverse order.
+
+Insertion Sort takes maximum time when elements are present in reverse order because each new element must be shifted across the sorted portion.
+
+D. MERGE SORT
+
+Best Case       : O(N log N)
+Average Case    : O(N log N)
+Worst Case      : O(N log N)
+Auxiliary Space : O(N)
+
+Reason:
+The array is divided into two halves repeatedly.
+
+Number of levels = log N
+
+Work at each level = O(N)
+
+Total = O(N log N)
+
+E. QUICK SORT
+
+Best Case       : O(N log N)
+Average Case    : O(N log N)
+Worst Case      : O(N²)
+Auxiliary Space : O(log N) average recursion stack.
+
+Worst-case auxiliary space can be O(N).
+
+Reason:
+- Best case: Pivot divides the array into nearly equal halves.
+- Worst case: Pivot repeatedly divides the array into one empty part and one part containing N-1 elements.
+
+F. HEAP SORT
+
+Best Case       : O(N log N)
+Average Case    : O(N log N)
+Worst Case      : O(N log N)
+Auxiliary Space : O(1) for in-place implementation.
+
+COMPARISON TABLE:
+
+Algorithm       Best          Average       Worst
+-----------------------------------------------------
+Bubble Sort     O(N)          O(N²)         O(N²)
+Selection Sort  O(N²)         O(N²)         O(N²)
+Insertion Sort  O(N)          O(N²)         O(N²)
+Merge Sort      O(N log N)    O(N log N)    O(N log N)
+Quick Sort      O(N log N)    O(N log N)    O(N²)
+Heap Sort       O(N log N)    O(N log N)    O(N log N)
+
+
+6. RECURSIVE ALGORITHMS
+
+RECURSION:
+
+Recursion is a programming technique in which a function calls itself to solve a smaller version of the same problem.
+
+Every recursive algorithm generally requires:
+
+1. Base Case:
+   The condition at which recursion stops.
+
+2. Recursive Case:
+   The part where the function calls itself.
+
+Example:
+
+void fun(int n) {
+
+    if(n == 0)
+        return;
+
+    cout << n << endl;
+
+    fun(n - 1);
+}
+
+Execution:
+
+fun(4)
+fun(3)
+fun(2)
+fun(1)
+fun(0)
+
+Output:
+
+4
+3
+2
+1
+
+Time Complexity = O(N)
+
+Auxiliary Space = O(N)
+
+Why?
+Because N recursive function calls can remain active in the call stack.
+
+
+RECURSION TREE
+A recursion tree is a visual representation of recursive function calls.
+
+Example:
+
+Consider:
+
+f(n) = f(n-1) + f(n-2)
+
+                    f(4)
+                  /      \
+               f(3)      f(2)
+              /   \        / \
+           f(2)  f(1)   f(1) f(0)
+           / \
+        f(1) f(0)
+
+The recursion continues until the base case is reached.
+
+Execution follows Depth First Search (DFS) style:
+
+1. f(4)
+2. f(3)
+3. f(2)
+4. f(1)
+5. f(0)
+6. f(1)
+7. f(2)
+8. f(1)
+9. f(0)
+
+This is the recursive Fibonacci example.
+
+NOTE:
+The tree represents all function calls, but not all calls remain in memory simultaneously.
+
+
+MEMORY / CALL STACK:
+
+Every recursive call creates a stack frame.
+
+Example:
+
++----------------+
+|     f(4)       |
++----------------+
+|     f(3)       |
++----------------+
+|     f(2)       |
++----------------+
+|     f(1)       |
++----------------+
+
+When a base case is reached:
+- The function starts returning.
+- Completed calls are popped from the stack.
+- Execution moves back to the previous function.
+
+IMPORTANT:
+
+Auxiliary Space Complexity of recursion is determined by the maximum number of simultaneously active recursive calls, i.e. the maximum recursion stack depth.
+
+For f(N) = f(N-1) + O(1):
+
+Stack depth = O(N)
+
+For f(N) = f(N/2) + O(1):
+
+Stack depth = O(log N)
+
+
+TWO IMPORTANT TYPES OF RECURSIVE APPROACHES
+
+1. LINEAR / DECREASE-AND-CONQUER RECURSION
+
+The problem size decreases by a fixed amount in each call.
+
+Example:
+
+T(N) = T(N-1) + O(1)
+
+Recurrence:
+
+T(N) = T(N-1) + 1
+
+Expansion:
+
+T(N) = T(N-2) + 1 + 1
+
+T(N) = T(N-3) + 1 + 1 + 1
+
+After K steps:
+
+T(N) = T(N-K) + K
+
+When N-K = 1:
+
+K = N-1
+
+Therefore:
+
+T(N) = O(N)
+
+Example algorithms:
+- Linear Search (recursive)
+- Factorial
+- Simple recursive traversal.
+
+IMPORTANT:
+Fibonacci is NOT a linear recursion tree. It has two recursive calls and produces an exponential number of calls in the naive implementation.
+
+
+2. DIVIDE AND CONQUER RECURSION
+
+Definition:
+
+Divide and Conquer is an algorithmic technique in which a problem is divided into smaller subproblems, those subproblems are solved recursively, and their results are combined to obtain the final answer.
+
+THREE STEPS:
+
+1. DIVIDE:
+   Divide the original problem into smaller subproblems.
+
+2. CONQUER:
+   Solve the smaller subproblems recursively.
+
+3. COMBINE:
+   Combine their results to obtain the final solution.
+
+GENERAL RECURRENCE:
+
+T(N) = aT(N/b) + f(N)
+
+Where:
+
+a = Number of subproblems
+b = Factor by which problem size is reduced
+f(N) = Work done outside recursive calls.
+
+Example:
+
+T(N) = 2T(N/2) + O(N)
+
+Here:
+a = 2
+b = 2
+f(N) = N
+
+Examples:
+- Merge Sort
+- Quick Sort
+- Binary Search (a single-subproblem divide-and-conquer variation)
+- Strassen's Matrix Multiplication.
+
+
+7. RECURSION TREE METHOD
+
+The Recursion Tree Method is used to solve recurrence relations by expanding them into a tree and calculating the work performed at each level.
+
+EXAMPLE: MERGE SORT
+
+Recurrence:
+
+T(N) = 2T(N/2) + N
+
+LEVEL 0:
+
+                   N
+             Work = N
+
+LEVEL 1:
+
+             N/2       N/2
+           Work N/2   Work N/2
+
+LEVEL 2:
+
+       N/4   N/4   N/4   N/4
+
+Each level has total work N.
+
+Number of levels:
+
+N → N/2 → N/4 → N/8 → ... → 1
+
+Therefore:
+
+Number of levels = log₂N
+
+Total work:
+
+N × log₂N
+
+Final Complexity:
+
+O(N log N)
+
+
+8. COMMON TIME COMPLEXITY GROWTH ORDER
+
+From FASTEST GROWTH PERFORMANCE to SLOWEST:
+
+O(1)
+O(log N)
+O(√N)
+O(N)
+O(N log N)
+O(N²)
+O(N³)
+O(2^N)
+O(N!)

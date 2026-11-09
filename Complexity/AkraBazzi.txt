@@ -1,0 +1,101 @@
+To apply the Akra-Bazzi method, the recurrence relation must be written in the following mathematical format:
+
+T(n) = g(n) + ∑ᵢ₌₁ᵏ [aᵢ · T(bᵢn + hᵢ(n))]
+
+Where the following structural constraints MUST hold true:
+
+* k ≥ 1 (There is at least one recursive term)
+* aᵢ > 0 (The coefficient of each recursive term is a positive real number)
+* 0 < bᵢ < 1 (The problem size reduction factor is strictly between 0 and 1)
+* g(n) ≥ 0 (The non-recursive overhead work must be non-negative)
+* hᵢ(n) = Tiny "perturbation" shifts like floor or ceiling functions. Rule of thumb: You can safely IGNORE hᵢ(n) during calculation.
+
+3. THE DEFINITIVE RIGOROUS METHOD (THE INTEGRAL)
+
+Step 1: Extract parameters (aᵢ, bᵢ) and the overhead function g(n).
+
+Step 2: Calculate the unique real number power factor p by solving:
+
+a₁(b₁)ᵖ + a₂(b₂)ᵖ + ... + aₖ(bₖ)ᵖ = 1
+
+Step 3: Evaluate the time complexity using the master integral formula:
+
+T(n) = Θ(nᵖ · (1 + ∫₁ⁿ [g(u) / uᵖ⁺¹] du))
+
+THE SECRET SHORTCUT TRICK (BYPASS THE INTEGRAL)
+
+Evaluating calculus integrals under exam or interview conditions takes too much time and causes arithmetic errors. Since g(n) is almost always of the polynomial-logarithmic form:
+
+g(n) = Θ(nᶜ(log n)ᵐ)
+
+You can bypass the integral!
+
+Simply solve for p and compare it directly to c (the exponent of n in g(n)).
+
+CASE 1: If p > c
+
+T(n) = Θ(nᵖ)
+
+CASE 2: If p = c
+
+T(n) = Θ(nᵖ(log n)ᵐ⁺¹)
+
+CASE 3: If p < c
+
+T(n) = Θ(g(n))
+
+T(n) = Θ(nᶜ(log n)ᵐ)
+
+4. STEP-BY-STEP WORKED EXAMPLE
+
+Problem:
+
+T(n) = T(n/5) + T(7n/10) + n
+
+Step 1: Extract Parameters
+
+a₁ = 1, b₁ = 1/5
+
+a₂ = 1, b₂ = 7/10
+
+g(n) = n
+
+Hence, c = 1, m = 0, since:
+
+g(n) = n¹(log n)⁰
+
+Step 2: Solve for p
+
+1(1/5)ᵖ + 1(7/10)ᵖ = 1
+
+Let's test p = 1:
+
+(1/5)¹ + (7/10)¹ = 2/10 + 7/10 = 9/10
+
+Since 9/10 < 1, the exponent p must be LESS than 1 to push the total to 1.
+
+Therefore:
+
+p < 1
+
+Specifically:
+
+p ≈ 0.82
+
+Step 3: Apply the Shortcut Trick
+
+We know:
+
+p ≈ 0.82
+
+c = 1
+
+Since p < c, this falls strictly into CASE 3.
+
+Formula dictates:
+
+T(n) = Θ(g(n))
+
+Final Complexity Answer:
+
+T(n) = Θ(n)

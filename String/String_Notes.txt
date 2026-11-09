@@ -1,0 +1,349 @@
+• String belongs to java.lang package.
+• Immutable (cannot be modified after creation).
+String Creation:
+• String s = "Hello";
+• String s = new String("Hello");
+• char[] ch = {'H','e','l','l','o'};
+  String s = new String(ch);
+• byte[] arr = {72,101,108,108,111};
+  String s = new String(arr);
+
+Modulo concept:
+int mod = 1_000_000_007;
+totalCount = totalCount % mod;
+
+For accessing Character Position:
+char ch = col.charAt(i);
+int position = ch - 'A' + 1; 
+
+String working:
+String s;
+
+    |
+Declaration only
+String s = "ABC";
+     |
+Declaration + Initialization
+
+s.length() --> Returns number of characters
+s.charAt(index) ---> Character Access
+s.indexOf('a') ----> First Occurrence
+s.lastIndexOf('a') ---> Last occurrence
+s.indexOf("abc")  --> Substring index
+
+COMPARISION OF STRINGS:
+== --> Compares reference
+
+.equals() ---> Compares content
+
+.equalsIgnoreCase()---> Ignores uppercase/lowercase
+
+.compareTo()---> Lexicographical comparison means dictionary ke hisaab se position unicode comparision 
+eg: "Apple".compareTo("Ball");     // -ve
+eg: "Cat".compareTo("Ball");       // +ve
+eg: "Java".compareTo("Java");      // 0
+
+.compareToIgnoreCase() ----> Case insensitive comparison
+
+s.equals(str) --> Checks Equality return true or false 
+ 
+s.isEmpty() --> Returns true if length is zero.
+
+s.isBlank() ---> Returns true for spaces only.
+
+s.toUpperCase()
+s.toLowerCase()
+
+Remove Spaces:
+Leading and trailing --> s.trim()
+other are: s.strip(), s.stripLeading(), s.stripTrailing()
+
+Replacing Characters :
+s.replace('a','b')
+→ Replaces every occurrence of character 'a' with 'b'.
+
+s.replace("old","new")
+→ Replaces every occurrence of a substring.
+
+s.replaceAll(regex,replacement)
+→ Replaces text using Regular Expressions (Regex).
+
+s.replaceFirst(regex,replacement)
+→ Replaces only the first matching occurrence
+
+==============================
+SEARCHING METHODS
+==============================
+
+s.contains("abc")
+→ Checks whether the string contains the given sequence.
+Returns: true or false.
+
+s.startsWith("He")
+→ Checks whether the string starts with the given prefix.
+
+s.endsWith("ld")
+→ Checks whether the string ends with the given suffix.
+
+s.indexOf('a')
+→ Returns the index of the first occurrence of a character.
+Returns -1 if not found.
+
+s.indexOf("Java")
+→ Returns the index of the first occurrence of a substring.
+
+s.lastIndexOf('a')
+→ Returns the index of the last occurrence of a character.
+
+==============================
+SUBSTRING
+==============================
+
+s.substring(beginIndex)
+→ Returns the string from beginIndex to the end.
+
+s.substring(beginIndex, endIndex)
+→ Returns characters from beginIndex to endIndex-1.
+(The ending index is excluded.)
+
+==============================
+JOINING STRINGS
+==============================
+
+Using +
+
+String c = a + b;
+→ Joins two strings.
+
+Using concat()
+
+a.concat(b);
+→ Concatenates two strings.
+
+Using String.join()
+
+String.join("-", "Java", "Python", "C++");
+Output:
+Java-Python-C++
+
+==============================
+SPLIT
+==============================
+
+String[] arr = s.split(",");
+
+→ Splits the string based on the given delimiter.
+
+Example:
+"Java,Python,C".split(",")
+
+Output:
+Java
+Python
+C
+
+==============================
+REPEAT
+==============================
+
+s.repeat(3)      (Java 11+)
+
+→ Repeats the string specified number of times.
+
+Example:
+"Hi".repeat(3)
+
+Output:
+HiHiHi
+
+==============================
+REGULAR EXPRESSIONS
+==============================
+
+s.matches(regex)
+
+→ Checks whether the complete string matches the given Regular Expression.
+
+Returns:
+true or false
+
+==============================
+INTERN
+==============================
+
+s.intern()
+
+→ Moves or returns the string from the String Constant Pool (SCP).
+
+Used to save memory by reusing String objects.
+
+==============================
+TYPE CONVERSION
+==============================
+
+String.valueOf(value)
+
+→ Converts any primitive or object into String.
+
+Examples:
+
+String.valueOf(100)
+
+String.valueOf(true)
+
+String.valueOf(12.5)
+
+==============================
+COPY VALUE OF
+==============================
+
+String.copyValueOf(charArray)
+
+→ Converts a character array into a String.
+
+==============================
+CHARACTER ARRAY
+==============================
+
+char[] ch = s.toCharArray();
+
+→ Converts String into character array.
+
+new String(ch);
+
+→ Converts character array into String.
+
+==============================
+BYTE ARRAY
+==============================
+
+byte[] arr = s.getBytes();
+
+→ Converts String into byte array.
+
+==============================
+STRING FORMAT
+==============================
+
+String.format(format, arguments)
+
+→ Creates a formatted String.
+
+Example:
+
+String.format("Age = %d",18);
+
+Output:
+Age = 18
+
+==============================
+HASH CODE
+==============================
+
+s.hashCode()
+
+→ Returns the hash value of the String.
+
+Used in HashMap, HashSet and other hashing-based collections.
+
+==============================
+REGION MATCHES
+==============================
+
+s.regionMatches(...)
+
+→ Compares a specific region (portion) of two strings.
+
+==============================
+CONTENT EQUALS
+==============================
+
+s.contentEquals(cs)
+
+→ Compares the content of String with StringBuffer or CharSequence.
+
+==============================
+UNICODE METHODS
+==============================
+
+s.codePointAt(index)
+→ Returns Unicode value of the character at the given index.
+
+s.codePointBefore(index)
+→ Returns Unicode value before the given index.
+
+s.codePointCount(begin,end)
+→ Returns total Unicode code points in the specified range.
+
+s.offsetByCodePoints(index,offset)
+→ Returns the index moved by the given number of Unicode code points.
+
+==============================
+COPY CHARACTERS
+==============================
+
+s.getChars(srcBegin, srcEnd, destination, destBegin)
+
+→ Copies characters from a String into a character array.
+
+==============================
+STRING ↔ NUMBER CONVERSION
+==============================
+
+String → int
+
+Integer.parseInt(s)
+
+String → long
+
+Long.parseLong(s)
+
+String → float
+
+Float.parseFloat(s)
+
+String → double
+
+Double.parseDouble(s)
+
+int → String
+
+String.valueOf(num)
+
+or
+
+Integer.toString(num)
+
+double → String
+
+Double.toString(value)
+
+==============================
+STRINGBUILDER / STRINGBUFFER
+==============================
+
+sb.toString()
+→ Converts StringBuilder into String.
+
+buffer.toString()
+→ Converts StringBuffer into String.
+
+==============================
+ESCAPE SEQUENCES
+==============================
+
+\n
+→ New Line
+
+\t
+→ Tab Space
+
+\\
+→ Backslash
+
+\"
+→ Double Quote
+
+\'
+→ Single Quote
+

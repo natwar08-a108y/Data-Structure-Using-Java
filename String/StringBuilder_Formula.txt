@@ -1,0 +1,40 @@
+StringBuilder Methods (Java)
+
+1.  Create
+
+    StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder("Hello");
+
+2.  append() - Adds data at the end.
+3.  charAt(index) - Returns character at index.
+4.  setCharAt(index, ch) - Replaces character.
+5.  delete(start, end) - Deletes start to end-1.
+6.  deleteCharAt(index) - Deletes one character.
+7.  insert(index, value) - Inserts data.
+8.  replace(start, end, str) - Replaces range.
+9.  reverse() - Reverses the characters.
+10. length() - Returns current length.
+11. capacity() - Returns current capacity.
+12. setLength(len) - Changes length.
+13. substring(start)
+14. substring(start, end)
+15. indexOf(str)
+16. lastIndexOf(str)
+17. toString() - Converts to String.
+18. compareTo(other) (Java 11+)
+19. codePointAt(index)
+20. ensureCapacity(size)
+21. trimToSize()
+
+Most Important for DSA
+
+-   append()
+-   charAt()
+-   setCharAt()
+-   reverse()
+-   deleteCharAt()
+-   delete()
+-   insert()
+-   length()
+-   substring()
+-   toString()

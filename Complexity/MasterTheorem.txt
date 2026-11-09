@@ -1,0 +1,204 @@
+MASTER THEOREM:
+
+Master Theorem is used to solve recurrence relations of the form:
+
+T(N) = aT(N/b) + f(N)
+
+Where:
+
+a = Number of recursive subproblems
+b = Reduction factor
+f(N) = Non-recursive work.
+
+First calculate:
+
+p = log_b(a)
+
+Then compare f(N) with:
+
+N^p
+
+There are THREE main cases.
+
+
+CASE 1:
+=======
+
+If:
+
+f(N) = O(N^(p-ε))
+
+For some ε > 0.
+
+Then:
+
+T(N) = Θ(N^p)
+
+Meaning:
+Recursive work dominates.
+
+Example:
+
+T(N) = 2T(N/2) + 1
+
+Here:
+
+a = 2
+b = 2
+f(N) = 1
+
+p = log₂2 = 1
+
+N^p = N
+
+Since 1 is polynomially smaller than N:
+
+T(N) = Θ(N)
+
+
+CASE 2:
+=======
+
+If:
+
+f(N) = Θ(N^p log^k N)
+
+Then:
+
+T(N) = Θ(N^p log^(k+1) N)
+
+Example:
+
+T(N) = 2T(N/2) + N
+
+Here:
+
+a = 2
+b = 2
+f(N) = N
+
+p = log₂2 = 1
+
+N^p = N
+
+Since f(N) = Θ(N):
+
+T(N) = Θ(N log N)
+
+
+CASE 3:
+=======
+
+If:
+
+f(N) = Ω(N^(p+ε))
+
+For some ε > 0, and the regularity condition holds:
+
+a f(N/b) ≤ c f(N)
+
+for some constant c < 1 and sufficiently large N.
+
+Then:
+
+T(N) = Θ(f(N))
+
+Meaning:
+Non-recursive work dominates.
+
+Example:
+
+T(N) = 2T(N/2) + N²
+
+Here:
+
+a = 2
+b = 2
+f(N) = N²
+
+p = log₂2 = 1
+
+N^p = N
+
+N² grows polynomially faster than N.
+
+Regularity condition is satisfied.
+
+Therefore:
+
+T(N) = Θ(N²)
+
+
+MASTER THEOREM QUICK SUMMARY
+
+
+Case 1:
+f(N) is smaller than N^p.
+
+Answer = Θ(N^p)
+
+Case 2:
+f(N) is equal to N^p, up to a logarithmic factor.
+
+Answer = Θ(N^p log^(k+1) N)
+
+Case 3:
+f(N) is polynomially larger than N^p and regularity condition holds.
+
+Answer = Θ(f(N))
+
+
+IMPORTANT:
+Master Theorem does not directly apply to every recurrence.
+
+For example:
+
+T(N) = T(N-1) + N
+
+This is not in the standard form aT(N/b) + f(N).
+
+
+9. IMPORTANT RECURRENCE RELATIONS AND THEIR COMPLEXITIES
+
+1. T(N) = T(N-1) + O(1)
+
+   Complexity = O(N)
+
+2. T(N) = T(N-1) + O(N)
+
+   Complexity = O(N²)
+
+3. T(N) = T(N/2) + O(1)
+
+   Complexity = O(log N)
+
+4. T(N) = T(N/2) + O(N)
+
+   Complexity = O(N)
+
+5. T(N) = 2T(N/2) + O(1)
+
+   Complexity = O(N)
+
+6. T(N) = 2T(N/2) + O(N)
+
+   Complexity = O(N log N)
+
+7. T(N) = 2T(N/2) + O(N²)
+
+   Complexity = O(N²)
+
+8. T(N) = 3T(N/2) + O(N)
+
+   Complexity = O(N^(log₂3))
+
+9. T(N) = 2T(N-1) + O(1)
+
+   Complexity = O(2^N)
+
+10. T(N) = T(N-1) + T(N-2) + O(1)
+
+    Complexity = O(2^N) as a simple upper bound.
+
+    More tightly, naive Fibonacci recursion takes Θ(φ^N),
+    where φ is the golden ratio (1+√5)/2.

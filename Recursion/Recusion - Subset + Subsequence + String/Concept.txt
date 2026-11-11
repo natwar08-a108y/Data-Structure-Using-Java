@@ -1,0 +1,1258 @@
+Java String methods used in this whole topic
+   str.charAt(0)            -> first character            "abc".charAt(0) = 'a'
+   str.substring(1)         -> everything from index 1    "abc".substring(1) = "bc"
+   str.substring(0, i)      -> from 0 up to i-1           "abc".substring(0,2) = "ab"
+   str.isEmpty()            -> true if length is 0
+   str.startsWith("app")    -> true if string begins with "app"
+   str.length()             -> number of characters
+
+The BIG PATTERN used in most String recursion:  PROCESSED / UNPROCESSED
+   We split the string into two parts:
+
+        p  = processed   (the answer we have built so far)
+        up = unprocessed (the part we still have to look at)
+
+   Start:   p = ""        up = "the whole string"
+   End:     up = ""       (nothing left)  -> p is a final answer
+
+   Each call:  look at the FIRST character of up (up.charAt(0)),
+               decide what to do with it, and call again with up.substring(1).
+
+   Picture for "abc":
+        p="" , up="abc"
+          take 'a' -> p="a" , up="bc"
+            take 'b' -> p="ab", up="c"
+              take 'c' -> p="abc", up=""   <- base case, answer!
+
+GOLDEN RULES
+   Rule 1: Every recursive function needs a BASE CONDITION (usually up.isEmpty()).
+   Rule 2: Each call must make the problem SMALLER (up.substring(1)).
+   Rule 3: To understand any recursion, DRAW THE TREE and trace what each call
+           receives (arguments) and what it returns/prints.
+
+Important reminder (from the video)
+   Strings in Java are IMMUTABLE. substring() does NOT change the original,
+   it CREATES A NEW string. Every call gets its own copy, so calls do not
+   disturb each other.
+
+
+
+PART 1 : Q1 - SKIP A CHARACTER
+
+
+QUESTION
+   Given  str = "baccad"  remove every 'a'  ->  answer = "bccd"
+
+THINK LIKE THIS (the video's way)
+   Take the first character. Ask: "Is it the character I want to skip?"
+      - YES ->  ignore it, just move on with the rest of the string
+      - NO  ->  keep it (add to answer), move on with the rest
+
+   Two ways to carry the answer:
+      (1) Pass the answer string in the ARGUMENT   (the "p" string)
+          -> future calls receive it, build on it
+      (2) Create the answer variable INSIDE the function body
+          -> every call has a NEW variable (local to that call)
+
+APPROACH 1 : answer passed in argument  (p = processed, up = unprocessed)
+
+   Trace for "baccad", skipping 'a':
+
+   skip(""    , "baccad")   ch='b' not 'a' -> add b
+   skip("b"   , "accad")    ch='a' IS 'a'  -> skip it, p stays "b"
+   skip("b"   , "ccad")     ch='c' -> add
+   skip("bc"  , "cad")      ch='c' -> add
+   skip("bcc" , "ad")       ch='a' -> skip
+   skip("bcc" , "d")        ch='d' -> add
+   skip("bccd", "")         up is empty -> PRINT "bccd"  (base case)
+
+   CODE:
+
+      static void skip(String p, String up) {
+          if (up.isEmpty()) {            // base condition: nothing left to check
+              System.out.println(p);     // p is the final answer
+              return;
+          }
+          char ch = up.charAt(0);        // look at first character
+
+          if (ch == 'a') {
+              skip(p, up.substring(1));        // don't add 'a', move ahead
+          } else {
+              skip(p + ch, up.substring(1));   // add this char, move ahead
+          }
+      }
+
+   Call:  skip("", "baccad");      Output:  bccd
+
+   (In the notes' drawing: the circled letter is the one being checked,
+    the part left of "/" is p, the part right of "/" is up.)
+
+APPROACH 2 : answer created INSIDE the function body (returns a String)
+
+   Now there is no "p" argument. The function RETURNS the answer.
+
+   Idea: skip("baccad") = ( first char if kept ) + skip("accad")
+                              ^ local answer of this call   ^ answer from the recursive call
+
+   Drawing from the notes:
+
+      (baccad)  ans = "b" + [ result of skip("accad") ]
+      (accad)   ans = ""  + [ result of skip("ccad")  ]     <- 'a' skipped, add nothing
+      (ccad)    ans = "c" + [ result of skip("cad")   ]
+      (cad)     ans = "c" + [ result of skip("ad")    ]
+      (ad)      ans = ""  + [ result of skip("d")     ]
+      (d)       ans = "d" + [ result of skip("")      ]
+      ("")      returns ""      <- base case
+
+   Now the answers come BACK UP (return journey):
+      skip("")      returns ""
+      skip("d")     returns "d" + ""    = "d"
+      skip("ad")    returns ""  + "d"   = "d"
+      skip("cad")   returns "c" + "d"   = "cd"
+      skip("ccad")  returns "c" + "cd"  = "ccd"
+      skip("accad") returns ""  + "ccd" = "ccd"
+      skip("baccad")returns "b" + "ccd" = "bccd"   -> back to main
+
+   CODE:
+
+      static String skip(String up) {
+          if (up.isEmpty()) {
+              return "";                       // nothing left -> empty answer
+          }
+
+          char ch = up.charAt(0);
+
+          if (ch == 'a') {
+              return skip(up.substring(1));            // add nothing, trust the rest
+          } else {
+              return ch + skip(up.substring(1));       // keep ch, then the rest
+          }
+      }
+
+   Call:  System.out.println(skip("baccad"));      Output:  bccd
+
+   KEY DIFFERENCE
+      Approach 1: answer builds while GOING DOWN (arguments), printed at the bottom.
+      Approach 2: answer builds while COMING BACK UP (return values).
+      Both are correct. Approach 2 is usually shorter for "return" type questions.
+
+   COMMON DOUBT: "ch + skip(...)" - is that math or String joining?
+      char + String  ->  String joining (concatenation). Fine.
+      BUT char + char  ->  adds ASCII numbers (int)! Careful. (see Part 6)
+
+
+
+PART 2 : Q2 - SKIP A STRING  (skip "apple")
+
+
+QUESTION
+   "bdapplefg"  ->  remove the word "apple"  ->  "bdfg"
+
+   Now we cannot check ONE character, we must check if the REMAINING string
+   STARTS WITH "apple". Use:   up.startsWith("apple")
+
+   Trace (return-type style, from the notes):
+
+      (bdapplefg)  ans = "b" + skip(...)
+      (dapplefg)   ans = "d" + skip(...)
+      (applefg)    starts with "apple"! -> skip 5 characters
+                   ans = "" + skip("fg")        <- up.substring(5)
+      (fg)         ans = "f" + skip("g")
+      (g)          ans = "g" + skip("")
+      ("")         returns ""
+
+   Return journey: "g" -> "fg" -> "fg" (from apple call) -> "dfg" -> "bdfg"
+
+   CODE:
+
+      static String skipApple(String up) {
+          if (up.isEmpty()) {
+              return "";
+          }
+          if (up.startsWith("apple")) {
+              return skipApple(up.substring(5));     // jump over all 5 letters
+          } else {
+              return up.charAt(0) + skipApple(up.substring(1));
+          }
+      }
+
+   Why substring(5)?  "apple" has 5 letters, so we cut them all off at once.
+
+
+
+PART 3 : Q3 - SKIP "app" BUT NOT "apple"
+
+
+QUESTION
+   Remove "app" only when it is NOT part of "apple".
+   Example:  "bacapplcdah"
+      "appl" is NOT "apple" -> so remove the "app"
+   Result: "baclcdah"
+
+   Almost a copy-paste of Q2 with ONE changed condition:
+      remove when it starts with "app"   AND   does NOT start with "apple"
+
+   CODE:
+
+      static String skipAppNotApple(String up) {
+          if (up.isEmpty()) {
+              return "";
+          }
+          if (up.startsWith("app") && !up.startsWith("apple")) {
+              return skipAppNotApple(up.substring(3));       // "app" = 3 letters
+          } else {
+              return up.charAt(0) + skipAppNotApple(up.substring(1));
+          }
+      }
+
+   Trace of "bacapplcdah":
+      b -> keep, a -> keep, c -> keep
+      "applcdah": starts with app, not apple -> skip 3 -> "lcdah"
+      l,c,d,a,h -> keep
+      Result: "baclcdah"
+
+   Test with "applepie": startsWith("apple") is true so the condition fails,
+   the 'a' is kept and we move on char by char -> "applepie" stays untouched.
+
+   FULL FILE (Stream.java) - all four methods together:
+
+      package com.kunal.strings;
+
+      public class Stream {
+          public static void main(String[] args) {
+              System.out.println(skipAppNotApple("bacapplcdah"));
+          }
+
+          static void skip(String p, String up) {
+              if (up.isEmpty()) {
+                  System.out.println(p);
+                  return;
+              }
+              char ch = up.charAt(0);
+
+              if (ch == 'a') {
+                  skip(p, up.substring(1));
+              } else {
+                  skip(p + ch, up.substring(1));
+              }
+          }
+
+          static String skip(String up) {
+              if (up.isEmpty()) {
+                  return "";
+              }
+
+              char ch = up.charAt(0);
+
+              if (ch == 'a') {
+                  return skip(up.substring(1));
+              } else {
+                  return ch + skip(up.substring(1));
+              }
+          }
+
+          static String skipApple(String up) {
+              if (up.isEmpty()) {
+                  return "";
+              }
+              if (up.startsWith("apple")) {
+                  return skipApple(up.substring(5));
+              } else {
+                  return up.charAt(0) + skipApple(up.substring(1));
+              }
+          }
+
+          static String skipAppNotApple(String up) {
+              if (up.isEmpty()) {
+                  return "";
+              }
+              if (up.startsWith("app") && !up.startsWith("apple")) {
+                  return skipAppNotApple(up.substring(3));
+              } else {
+                  return up.charAt(0) + skipAppNotApple(up.substring(1));
+              }
+          }
+      }
+
+   Output of main:   baclcdah
+
+   TIME COMPLEXITY (video's view): every character is checked ONCE -> about
+   N recursive calls  -> O(N).
+   (Strict note: Java's substring() copies the string, so the real cost is a
+    bit more, but for interviews "one check per character = O(N) calls" is
+    the idea.)
+
+
+
+PART 4 : TWO WAYS TO GET ANSWERS OUT (argument vs inside function)
+
+
+Recall from the video:
+
+   Way 1 - Pass the answer in the ARGUMENT
+           -> Good for PRINTING answers. Future calls get what the past built.
+           -> Example:  skip(String p, String up)   -> void
+
+   Way 2 - Create the answer INSIDE the function and RETURN it
+           -> Good when the question says "RETURN ..."
+           -> Example:  skip(String up)             -> String
+
+For ARRAYLIST return (very important point from your Recursion notes):
+
+   Goal: return an ArrayList but do NOT take it in the argument.
+
+   Problem: if the list is created inside the function, EVERY CALL GETS ITS OWN
+   BRAND NEW LIST. Calls do not know about each other's lists.
+
+   Solution:
+      1. Each call creates its own local list.
+      2. Each call asks its recursive child(ren) for THEIR list.
+      3. The parent merges them using  list.addAll(childList)
+      4. The parent returns the merged list upward.
+
+   Picture (collecting answers while returning):
+
+         call A  local list = [ ]
+            |  gets list from B  ->  addAll
+         call B  local list = [ ]
+            |  gets list from C  ->  addAll
+         call C  local list = [ "x" ]     (base case creates the first answer)
+
+   So the answers travel UP from the bottom, merged level by level.
+
+
+
+PART 5 : Q4 - SUBSEQUENCES OF A STRING   (THE MOST IMPORTANT TOPIC)
+
+
+WHAT IS A SUBSEQUENCE / SUBSET?
+   - Take some elements, leave some elements.
+   - Order of the original is kept.
+   - Elements need NOT be next to each other ("non-adjacent collection").
+
+   Example array [3, 5, 9] -> all subsets:
+        [3]  [5]  [9]  [3,5]  [3,9]  [5,9]  [3,5,9]   and the empty one []
+   Total = 2^3 = 8 subsets.
+
+   Example string "abc" -> 
+        ""  a  b  c  ab  ac  bc  abc          (8 subsequences)
+
+   Do not confuse with:
+      Permutations -> ORDER matters ("ab" and "ba" are different)
+      Subsets      -> pick or not pick, order of original is kept
+
+THE PATTERN  (marked "VVI" in the notes)
+   "This pattern of TAKING some elements and REMOVING (ignoring) some
+    is known as the SUBSET PATTERN."
+
+   For EVERY character there are exactly TWO choices:
+        Choice 1: TAKE it        (put it in p)
+        Choice 2: IGNORE it      (do not put it in p)
+
+   Then do the same for the next character, and the next...
+
+THE TREE for "abc"   (left of "/" = p , right of "/" = up)
+
+                                 "" / abc
+                           ______/        \______
+                        take a            ignore a
+                      "a" / bc           "" / bc
+                      /      \            /      \
+                  take b   ignore b    take b   ignore b
+                 "ab"/c    "a"/c       "b"/c     ""/c
+                 /   \      /  \        /  \      /  \
+              take  ign.  take ign.  take ign.  take ign.
+               c     c     c    c     c    c     c    c
+             abc/"" ab/"" ac/"" a/"" bc/"" b/"" c/"" ""/""
+
+   Leaves (up is empty) = the 8 answers:
+        abc, ab, ac, a, bc, b, c, ""(empty)
+
+   Why leaves? Because when up is empty, there are no more decisions left.
+
+CODE (print version)
+
+   static void subseq(String p, String up) {
+       if (up.isEmpty()) {
+           System.out.println(p);
+           return;
+       }
+       char ch = up.charAt(0);
+
+       subseq(p + ch, up.substring(1));    // Choice 1: TAKE the character
+       subseq(p,      up.substring(1));    // Choice 2: IGNORE the character
+   }
+
+   subseq("", "abc");
+
+   Output (in this order):
+        abc
+        ab
+        ac
+        a
+        bc
+        b
+        c
+        (empty line)       <- the empty subsequence
+
+   TWO recursive calls in ONE function = a TREE (not a straight line).
+   The first call runs completely (goes all the way left), then the second.
+
+CODE (return ArrayList version)   Q5 : "Return an ArrayList of Strings"
+
+   static ArrayList<String> subseqRet(String p, String up) {
+       if (up.isEmpty()) {
+           ArrayList<String> list = new ArrayList<>();
+           list.add(p);                 // the one answer found at this leaf
+           return list;
+       }
+       char ch = up.charAt(0);
+
+       ArrayList<String> left  = subseqRet(p + ch, up.substring(1));  // took ch
+       ArrayList<String> right = subseqRet(p,      up.substring(1));  // ignored ch
+
+       left.addAll(right);              // merge both lists
+       return left;
+   }
+
+   HOW IT WORKS (base case = one item):
+      At a leaf the list holds ONLY ONE item: p.
+      Going up, every parent receives two lists (left and right) and merges.
+
+   Example mini trace  subseqRet("", "ab"):
+
+        ("" , "ab")
+        |-- left  = subseqRet("a" , "b")
+        |      |-- left  = subseqRet("ab", "")  -> ["ab"]
+        |      |-- right = subseqRet("a" , "")  -> ["a"]
+        |      returns ["ab","a"]
+        |-- right = subseqRet(""  , "b")
+        |      |-- left  = subseqRet("b", "")   -> ["b"]
+        |      |-- right = subseqRet("" , "")   -> [""]
+        |      returns ["b",""]
+        merge -> ["ab","a","b",""]
+
+   Why does this work even though each call has its own list?
+      Because we RETURN the list and the parent ADDS it into its own.
+      (Doubt from video: reference variables point to ONE list object in heap.
+       Here every leaf creates a separate list, and addAll() copies the items
+       into the parent's list.)
+
+   Alternative: pass the list in the argument (only ONE list for all calls):
+        void subseq(String p, String up, ArrayList<String> ans)
+      -> then at the leaf do ans.add(p). Also correct, different style.
+
+
+
+PART 6 : Q6 - PRINT THE ASCII VALUE OF A CHARACTER
+
+
+WHAT IS ASCII?
+   Every character is stored as a number.
+        'A' = 65 ... 'Z' = 90
+        'a' = 97 ... 'z' = 122
+        '0' = 48 ... '9' = 57
+
+THINGS TO REMEMBER IN JAVA
+   1)  char + int  ->  becomes an int
+          char ch = 'a';
+          System.out.println(ch + 1);          // prints 98   (an int!)
+
+   2)  To get a CHARACTER back, cast it:
+          System.out.println((char)(ch + 1));  // prints b
+
+   3)  To see the ASCII number of a char:
+          int x = ch + 0;        // 97
+          or  (int) ch;          // 97
+
+   Ascii.java
+   ----------
+      package com.kunal.strings;
+
+      public class Ascii {
+          public static void main(String[] args) {
+              char ch = 'a';
+              System.out.println((char)(ch + 1));      // b
+          }
+      }
+
+   Useful trick used later in Phone Pad:
+          char digitChar = '2';
+          int digit = digitChar - '0';     // '2' (50) - '0' (48) = 2   (char -> int)
+          char letter  = (char)('a' + 3);  // 'd'                        (int -> char)
+
+   Another point: 
+          String s = "x" + 'a';        // "xa"   (String + char = String)
+          String t = "x" + ('a' + 0);  // "x97"  (String + int  = String with number)
+
+
+
+PART 7 : Q7/Q8 - SUBSEQUENCES THAT ALSO INCLUDE ASCII VALUES
+
+
+QUESTION
+   Now every character has THREE choices instead of two:
+        1) TAKE the character          -> p + ch
+        2) IGNORE the character        -> p
+        3) TAKE its ASCII value        -> p + (ch + 0)
+
+   Example for "abc": answers include things like "a", "97", "ab", "a98", "97b",
+   "9798", ... Total answers = 3^3 = 27 (3 choices, 3 characters).
+
+   Trick: (ch + 0) turns the char into an int (97 for 'a'). When added to a
+   String, the number is written as text, like "97".
+
+   Tree for ONE level:
+                    p / "abc"
+                 /       |        \
+          p+'a'/bc     p/bc      p+97/bc
+          (take)      (ignore)   (take ascii)
+
+   CODE (print):
+
+      static void subseqAscii(String p, String up) {
+          if (up.isEmpty()) {
+              System.out.println(p);
+              return;
+          }
+          char ch = up.charAt(0);
+          subseqAscii(p + ch, up.substring(1));
+          subseqAscii(p, up.substring(1));
+          subseqAscii(p + (ch + 0), up.substring(1));
+      }
+
+   CODE (return ArrayList):
+
+      static ArrayList<String> subseqAsciiRet(String p, String up) {
+          if (up.isEmpty()) {
+              ArrayList<String> list = new ArrayList<>();
+              list.add(p);
+              return list;
+          }
+          char ch = up.charAt(0);
+          ArrayList<String> first  = subseqAsciiRet(p + ch,       up.substring(1));
+          ArrayList<String> second = subseqAsciiRet(p,            up.substring(1));
+          ArrayList<String> third  = subseqAsciiRet(p + (ch + 0), up.substring(1));
+
+          first.addAll(second);
+          first.addAll(third);
+          return first;
+      }
+
+   Same idea as before, just ONE extra recursive call and one extra addAll.
+
+   Rule to remember:  NUMBER OF CHOICES per element = number of recursive calls
+   in the function.  2 choices -> 2 calls.  3 choices -> 3 calls.
+
+   FULL FILE (SubSeq.java):
+
+      package com.kunal.strings;
+
+      import java.util.ArrayList;
+
+      public class SubSeq {
+          public static void main(String[] args) {
+      //        subseqAscii("", "abc");
+              System.out.println(subseqAsciiRet("", "abc"));
+          }
+
+          static void subseq(String p, String up) {
+              if (up.isEmpty()) {
+                  System.out.println(p);
+                  return;
+              }
+              char ch = up.charAt(0);
+              subseq(p + ch, up.substring(1));
+              subseq(p, up.substring(1));
+          }
+
+          static ArrayList<String> subseqRet(String p, String up) {
+              if (up.isEmpty()) {
+                  ArrayList<String> list = new ArrayList<>();
+                  list.add(p);
+                  return list;
+              }
+              char ch = up.charAt(0);
+              ArrayList<String> left = subseqRet(p + ch, up.substring(1));
+              ArrayList<String> right = subseqRet(p, up.substring(1));
+
+              left.addAll(right);
+              return left;
+          }
+
+          static void subseqAscii(String p, String up) {
+              if (up.isEmpty()) {
+                  System.out.println(p);
+                  return;
+              }
+              char ch = up.charAt(0);
+              subseqAscii(p + ch, up.substring(1));
+              subseqAscii(p, up.substring(1));
+              subseqAscii(p + (ch+0), up.substring(1));
+          }
+
+          static ArrayList<String> subseqAsciiRet(String p, String up) {
+              if (up.isEmpty()) {
+                  ArrayList<String> list = new ArrayList<>();
+                  list.add(p);
+                  return list;
+              }
+              char ch = up.charAt(0);
+              ArrayList<String> first = subseqAsciiRet(p + ch, up.substring(1));
+              ArrayList<String> second = subseqAsciiRet(p, up.substring(1));
+              ArrayList<String> third = subseqAsciiRet(p + (ch+0), up.substring(1));
+
+              first.addAll(second);
+              first.addAll(third);
+              return first;
+          }
+      }
+
+
+
+PART 8 : SUBSETS OF AN ARRAY  -  ITERATIVE APPROACH  ("Recursion & Iteration")
+
+
+The same subset problem can be solved WITHOUT recursion (using loops).
+This is very popular in interviews.
+
+PROBLEM
+   arr = [1, 2, 3]   ->   [], [1], [2], [1,2], [3], [1,3], [2,3], [1,2,3]
+
+THE IDEA  (copy-and-add)
+   1) Start with ONE empty subset:           outer = [ [] ]
+   2) For EACH number in the array:
+         take ALL existing subsets,
+         make a COPY of each one,
+         ADD the number to the copy,
+         put the copies back in the outer list.
+
+   Step-by-step (from the notes drawing):
+
+   Start:                                   [ [] ]
+
+   num = 1 : copy [] , add 1 -> [1]
+                                            [ [], [1] ]
+
+   num = 2 : copy [] -> [2]
+             copy [1] -> [1,2]
+                                            [ [], [1], [2], [1,2] ]
+
+   num = 3 : copy [] -> [3]
+             copy [1] -> [1,3]
+             copy [2] -> [2,3]
+             copy [1,2] -> [1,2,3]
+                                            [ [], [1], [2], [1,2],
+                                              [3], [1,3], [2,3], [1,2,3] ]
+
+   Each number DOUBLES the number of subsets  ->  2^N at the end.
+
+CODE
+
+   static List<List<Integer>> subset(int[] arr) {
+       List<List<Integer>> outer = new ArrayList<>();
+       outer.add(new ArrayList<>());             // start with the empty subset
+
+       for (int num : arr) {
+           int n = outer.size();                 // FREEZE the size before adding!
+           for (int i = 0; i < n; i++) {
+               List<Integer> internal = new ArrayList<>(outer.get(i)); // COPY
+               internal.add(num);                // add current number to the copy
+               outer.add(internal);              // store the new subset
+           }
+       }
+       return outer;
+   }
+
+WHY EACH LINE EXISTS (beginner doubts)
+
+   Q: Why  int n = outer.size()  before the inner loop?
+   A: outer keeps GROWING inside the loop. If we used outer.size() in the loop
+      condition it would never stop. We only want to process the subsets that
+      existed BEFORE this number started. So we freeze the size.
+
+   Q: Why  new ArrayList<>(outer.get(i))  (a copy)?
+   A: If we did  outer.get(i).add(num)  we would CHANGE the old subset itself.
+      We need the old one kept AND a new bigger one. (References point to the
+      same object, so we must create a real copy.)
+
+   Q: What is "List<List<Integer>>"?
+   A: A list whose items are lists. Outer list = all subsets, inner list = one subset.
+
+
+
+PART 9 : SUBSETS WITH DUPLICATE ELEMENTS
+
+
+PROBLEM
+   arr = [1, 2, 2]
+   If we use the normal method we get duplicate subsets like [2] twice and
+   [1,2] twice.  We want ONLY UNIQUE subsets.
+
+   Normal (wrong for duplicates):
+        [], [1], [2], [1,2], [2], [1,2], [2,2], [1,2,2]
+                            ^^^  ^^^^^   <- repeated
+
+   Wanted:
+        [], [1], [2], [1,2], [2,2], [1,2,2]       (6 subsets)
+
+TWO KEY POINTS (from the notes, in blue)
+
+   POINT 1:  When you find a duplicate element, ONLY ADD IT TO THE SUBSETS
+             THAT WERE NEWLY CREATED IN THE PREVIOUS STEP.
+
+   POINT 2:  Because of point 1, duplicates have to be TOGETHER.
+             => SORT THE ARRAY first.
+
+WHY DOES POINT 1 WORK?  (picture)
+
+   arr = [1, 2, 2]
+
+   After 1:              [ [], [1] ]
+   First 2 (normal):     add 2 to ALL -> [2], [1,2]
+                         [ [], [1], [2], [1,2] ]
+                                    \_____ newly created by first 2 _____/
+
+   Second 2 (duplicate!):
+        If we add 2 to ALL subsets we'd make [2] and [1,2] again (they exist).
+        So add 2 ONLY to the subsets created by the FIRST 2:
+              [2]   -> [2,2]
+              [1,2] -> [1,2,2]
+        Result:
+        [ [], [1], [2], [1,2], [2,2], [1,2,2] ]
+
+   Track using index positions:
+        index:    0    1     2     3
+        subset:   []   [1]   [2]   [1,2]
+                              ^ these (index 2..3) are "new from previous step"
+
+HOW TO FIND THAT RANGE: use two variables  start  and  end
+
+   end   = last index of outer BEFORE adding for this element
+   start = 0 normally
+           BUT if arr[i] == arr[i-1] (same as previous)
+              start = end + 1   (the old 'end' + 1 = where the previous step's
+                                 new subsets began... see trace below)
+
+CODE
+
+   static List<List<Integer>> subsetDuplicate(int[] arr) {
+       Arrays.sort(arr);                        // duplicates must be adjacent
+       List<List<Integer>> outer = new ArrayList<>();
+       outer.add(new ArrayList<>());
+
+       int start = 0;
+       int end = 0;
+       for (int i = 0; i < arr.length; i++) {
+           start = 0;
+           // if current and previous element is same, s = e + 1
+           if (i > 0 && arr[i] == arr[i-1]) {
+               start = end + 1;
+           }
+           end = outer.size() - 1;              // last index right now
+           int n = outer.size();
+           for (int j = start; j < n; j++) {
+               List<Integer> internal = new ArrayList<>(outer.get(j));
+               internal.add(arr[i]);
+               outer.add(internal);
+           }
+       }
+       return outer;
+   }
+
+FULL TRACE for [1, 2, 2]
+
+   Initially: outer = [ [] ]        start = 0, end = 0
+
+   i = 0  (value 1)
+        arr[0] is first element -> start = 0
+        end = outer.size()-1 = 0
+        n = 1
+        j = 0 : copy [] add 1 -> [1]
+        outer = [ [], [1] ]
+
+   i = 1  (value 2)
+        arr[1]=2 vs arr[0]=1 -> different -> start = 0
+        end = outer.size()-1 = 1
+        n = 2
+        j = 0 : [] -> [2]
+        j = 1 : [1] -> [1,2]
+        outer = [ [], [1], [2], [1,2] ]
+
+   i = 2  (value 2)
+        arr[2]=2 == arr[1]=2 -> SAME -> start = end + 1 = 1 + 1 = 2
+        end = outer.size()-1 = 3
+        n = 4
+        j = 2 : [2]   -> [2,2]
+        j = 3 : [1,2] -> [1,2,2]
+        outer = [ [], [1], [2], [1,2], [2,2], [1,2,2] ]
+
+   Final answer printed:
+        []
+        [1]
+        [2]
+        [1, 2]
+        [2, 2]
+        [1, 2, 2]
+
+   Notice: at i=2 we skipped j = 0 and j = 1 (the subsets that existed
+   BEFORE the first 2). Only the subsets created by the first 2 got extended.
+
+   FULL FILE (SubSet.java):
+
+      package com.kunal.strings;
+
+      import java.util.ArrayList;
+      import java.util.Arrays;
+      import java.util.List;
+
+      public class SubSet {
+          public static void main(String[] args) {
+              int[] arr = {1, 2, 2};
+              List<List<Integer>> ans = subsetDuplicate(arr);
+              for (List<Integer> list : ans) {
+                  System.out.println(list);
+              }
+          }
+
+          static List<List<Integer>> subset(int[] arr) {
+              List<List<Integer>> outer = new ArrayList<>();
+              outer.add(new ArrayList<>());
+              for (int num : arr) {
+                  int n = outer.size();
+                  for (int i = 0; i < n; i++) {
+                      List<Integer> internal = new ArrayList<>(outer.get(i));
+                      internal.add(num);
+                      outer.add(internal);
+                  }
+              }
+              return outer;
+          }
+
+          static List<List<Integer>> subsetDuplicate(int[] arr) {
+              Arrays.sort(arr);
+              List<List<Integer>> outer = new ArrayList<>();
+              outer.add(new ArrayList<>());
+              int start = 0;
+              int end = 0;
+              for (int i = 0; i < arr.length; i++) {
+                  start = 0;
+                  // if current and previous element is same, s = e + 1
+                  if (i > 0 && arr[i] == arr[i-1]) {
+                      start = end + 1;
+                  }
+                  end = outer.size() - 1;
+                  int n = outer.size();
+                  for (int j = start; j < n; j++) {
+                      List<Integer> internal = new ArrayList<>(outer.get(j));
+                      internal.add(arr[i]);
+                      outer.add(internal);
+                  }
+              }
+              return outer;
+          }
+      }
+
+   WHEN TO APPLY THE SUBSET PATTERN?  (from the video)
+      Whenever the question says "take some elements and remove/ignore some",
+      or asks for all combinations of picking elements (subsets, subsequences,
+      power set). Each element = take or not take.
+
+
+
+PART 10 : COMPLEXITY ANALYSIS (SUBSETS)
+
+
+Let N = number of elements.
+
+NUMBER OF SUBSETS
+   Every element doubles the count:   2 x 2 x 2 ... (N times) = 2^N subsets.
+
+TIME COMPLEXITY :   O( N * 2^N )
+   - There are 2^N subsets to create.
+   - Creating each subset means COPYING an older subset (up to N elements).
+   - So:  2^N subsets  x  N work per copy  =  N * 2^N.
+
+SPACE COMPLEXITY :  O( 2^N * N )
+   - We STORE all 2^N subsets.
+   - Each subset can be up to N elements long.
+   - So:  2^N  x  N.
+   (Notes: "total subsets" = 2^N,  "space taken by each subset = O(N)".)
+
+Quick table
+   Elements N | Subsets 2^N
+        3     |      8
+        4     |     16
+       10     |   1024
+       20     | 1,048,576      (this is why subset problems are only for small N)
+
+Recursive subsequence (Part 5): same count of leaves, 2^N, and each answer
+string is up to N long -> also about O(N * 2^N).
+
+Duplicates version: same worst-case complexity (the sorting adds O(N log N),
+which is smaller than N * 2^N).
+
+
+
+PART 11 : BONUS - SAME PROCESSED/UNPROCESSED PATTERN IN OTHER PROBLEMS
+
+(These files were also given. They show how the same thinking solves more
+ problems. Each has 3 versions: PRINT, RETURN LIST, COUNT.)
+
+11A. DICE THROW  (Dice.java)
+QUESTION
+   Throw a dice (faces 1 to 6) any number of times. Print all ways to get a
+   total (target).  Example target = 4.
+
+   Ways:  1111, 112, 121, 13, 211, 22, 31, 4
+
+IDEA
+   At each step choose a face i from 1 to 6, but never more than the
+   remaining target (i <= target). Reduce target by i. Stop when target == 0.
+
+   Tree for target = 4 (first levels):
+        ("" , 4)
+         |-- 1 -> ("1", 3) -> ... 
+         |-- 2 -> ("2", 2) -> ...
+         |-- 3 -> ("3", 1) -> ...
+         |-- 4 -> ("4", 0) -> PRINT 4
+
+   NOTE: here we use a FOR LOOP of recursive calls instead of 2 or 3 fixed calls
+   because the number of choices is 6.
+
+CODE
+
+   package com.kunal.strings;
+
+   import java.util.ArrayList;
+
+   public class Dice {
+       public static void main(String[] args) {
+           dice("", 4);
+           System.out.println(diceRet("", 4));
+       }
+
+       static void dice(String p, int target) {
+           if (target == 0) {
+               System.out.println(p);
+               return;
+           }
+
+           for (int i = 1; i <= 6 && i <= target; i++) {
+               dice(p + i, target - i);
+           }
+       }
+
+       static ArrayList<String> diceRet(String p, int target) {
+           if (target == 0) {
+               ArrayList<String> list = new ArrayList<>();
+               list.add(p);
+               return list;
+           }
+           ArrayList<String> list = new ArrayList<>();
+           for (int i = 1; i <= 6 && i <= target; i++) {
+               list.addAll(diceRet(p + i, target - i));
+           }
+           return list;
+       }
+
+       static void diceFace(String p, int target, int face) {
+           if (target == 0) {
+               System.out.println(p);
+               return;
+           }
+
+           for (int i = 1; i <= face && i <= target; i++) {
+               diceFace(p + i, target - i, face);
+           }
+       }
+
+       static ArrayList<String> diceFaceRet(String p, int target, int face) {
+           if (target == 0) {
+               ArrayList<String> list = new ArrayList<>();
+               list.add(p);
+               return list;
+           }
+           ArrayList<String> list = new ArrayList<>();
+           for (int i = 1; i <= face && i <= target; i++) {
+               list.addAll(diceFaceRet(p + i, target - i, face));
+           }
+           return list;
+       }
+
+   }
+
+   Output of main (dice("",4)):
+        1111
+        112
+        121
+        13
+        211
+        22
+        31
+        4
+   and then the same eight as a list: [1111, 112, 121, 13, 211, 22, 31, 4]
+
+   diceFace = same thing but the number of faces is a parameter (not fixed 6).
+
+   Remember the loop condition:   i <= face   (don't exceed the dice)
+                           AND    i <= target (don't overshoot the sum)
+
+11B. PERMUTATIONS OF A STRING  (Permutations.java)
+QUESTION
+   "abc" -> abc, acb, bac, bca, cab, cba   (n! = 6 arrangements)
+
+IDEA
+   Take the FIRST character of up (call it ch) and INSERT it at EVERY possible
+   position inside p:   before everything, between letters, and at the end.
+   If p has length L, there are L + 1 positions (i = 0 .. L).
+
+   Split p at position i:
+        f = p.substring(0, i)       (first part)
+        s = p.substring(i)          (second part)
+        new p = f + ch + s
+
+   Tree for "abc":
+
+      p="" , up="abc"        ch='a' -> only position 0   -> "a"
+        p="a" , up="bc"      ch='b' -> positions 0,1     -> "ba" , "ab"
+          p="ba", up="c"     ch='c' -> positions 0,1,2   -> "cba","bca","bac"
+          p="ab", up="c"     ch='c' -> positions 0,1,2   -> "cab","acb","abc"
+
+   Number of leaves:  1 x 2 x 3 = 6 = 3!
+
+   Insert 'c' into "ab":
+        i=0 : f="",  s="ab"  -> "" + c + "ab" = "cab"
+        i=1 : f="a", s="b"   -> "a" + c + "b"  = "acb"
+        i=2 : f="ab",s=""    -> "ab" + c + ""  = "abc"
+
+CODE
+
+   package com.kunal.strings;
+
+   import java.util.ArrayList;
+
+   public class Permutations {
+       public static void main(String[] args) {
+   //        permutations("", "abc");
+
+   //        ArrayList<String> ans = permutationsList("", "abc");
+   //        System.out.println(ans);
+
+           System.out.println(permutationsCount("", "abcd"));
+       }
+
+       static void permutations(String p, String up) {
+           if (up.isEmpty()) {
+               System.out.println(p);
+               return;
+           }
+           char ch = up.charAt(0);
+           for (int i = 0; i <= p.length(); i++) {
+               String f = p.substring(0, i);
+               String s = p.substring(i, p.length());
+               permutations(f + ch + s, up.substring(1));
+           }
+       }
+
+       static ArrayList<String> permutationsList(String p, String up) {
+           if (up.isEmpty()) {
+               ArrayList<String> list = new ArrayList<>();
+               list.add(p);
+               return list;
+           }
+           char ch = up.charAt(0);
+
+           // local to this call
+           ArrayList<String> ans = new ArrayList<>();
+
+           for (int i = 0; i <= p.length(); i++) {
+               String f = p.substring(0, i);
+               String s = p.substring(i, p.length());
+               ans.addAll(permutationsList(f + ch + s, up.substring(1)));
+           }
+           return ans;
+       }
+
+       static int permutationsCount(String p, String up) {
+           if (up.isEmpty()) {
+               return 1;
+           }
+           int count = 0;
+           char ch = up.charAt(0);
+           for (int i = 0; i <= p.length(); i++) {
+               String f = p.substring(0, i);
+               String s = p.substring(i, p.length());
+               count = count + permutationsCount(f + ch + s, up.substring(1));
+           }
+           return count;
+       }
+
+   }
+
+   Output of permutations("", "abc") (order printed):
+        cba
+        bca
+        bac
+        cab
+        acb
+        abc
+
+   Output of main as written:  permutationsCount("", "abcd") = 24  (4!)
+
+   COUNT version: each leaf returns 1, each parent ADDS the numbers coming
+   back from its children. (Count = sum of children.)
+
+   Complexity: N! permutations, each built with String work of N -> O(N * N!).
+
+11C. PHONE PAD COMBINATIONS  (PhonePad.java)
+
+   Each digit maps to 3 letters. Given digits, print all letter combinations.
+
+   In THIS video's simplified keypad:
+        digit 1 -> a b c
+        digit 2 -> d e f
+        digit 3 -> g h i
+        digit 4 -> j k l ...  and so on, 3 letters per digit.
+   (A REAL phone keypad starts with 2 -> abc and 7, 9 have 4 letters. This
+    code is a simple version with a fixed 3 letters per digit.)
+
+   Input "12"  ->  {a,b,c} x {d,e,f} = 9 combinations: ad ae af bd be bf cd ce cf
+
+FORMULA behind the loop
+   Digit d owns letter indexes   (d-1)*3  up to  d*3 - 1
+        digit 1 -> 0,1,2 -> a,b,c
+        digit 2 -> 3,4,5 -> d,e,f
+   Letter from index i:  (char)('a' + i)
+
+   Turning a digit character into an int:   up.charAt(0) - '0'
+
+CODE
+
+   package com.kunal.strings;
+
+   import java.util.ArrayList;
+
+   public class PhonePad {
+       public static void main(String[] args) {
+           System.out.println(padRet("", "12").size());
+           System.out.println(padCount("", "12"));
+       }
+
+       static void pad(String p, String up) {
+           if (up.isEmpty()) {
+               System.out.println(p);
+               return;
+           }
+           int digit = up.charAt(0) - '0'; // this will convert '2' into 2
+           for (int i = (digit - 1) * 3; i < digit * 3; i++) {
+               char ch = (char) ('a' + i);
+               pad(p + ch, up.substring(1));
+           }
+
+       }
+
+       static ArrayList<String> padRet(String p, String up) {
+           if (up.isEmpty()) {
+               ArrayList<String> list = new ArrayList<>();
+               list.add(p);
+               return list;
+           }
+           int digit = up.charAt(0) - '0'; // this will convert '2' into 2
+
+           ArrayList<String> list = new ArrayList<>();
+
+           for (int i = (digit - 1) * 3; i < digit * 3; i++) {
+               char ch = (char) ('a' + i);
+               list.addAll(padRet(p + ch, up.substring(1)));
+           }
+           return list;
+       }
+
+       static int padCount(String p, String up) {
+           if (up.isEmpty()) {
+               return 1;
+           }
+           int count = 0;
+           int digit = up.charAt(0) - '0'; // this will convert '2' into 2
+           for (int i = (digit - 1) * 3; i < digit * 3; i++) {
+               char ch = (char) ('a' + i);
+               count = count + padCount(p + ch, up.substring(1));
+           }
+           return count;
+       }
+   }
+
+   Output of main:
+        9
+        9
+
+   Tree for "12":
+        p="" , up="12"
+         |-- 'a' -> p="a", up="2" -> ad, ae, af
+         |-- 'b' -> p="b", up="2" -> bd, be, bf
+         |-- 'c' -> p="c", up="2" -> cd, ce, cf
+
+
+PART 12 : CHEAT SHEET AND INTERVIEW TIPS
+
+
+HOW TO DECIDE THE RECURSION SHAPE
+
+   Question type                              | Shape of the function
+   -------------------------------------------|--------------------------------
+   Remove / skip things from a string         | 1 call (if/else on first char)
+   Take OR ignore each element (subsets)      | 2 recursive calls
+   Take / ignore / ASCII                      | 3 recursive calls
+   Many choices (dice, phone pad)             | FOR LOOP with recursive calls
+   Insert at every position (permutations)    | FOR LOOP over positions
+
+THREE OUTPUT STYLES (same logic, only the "plumbing" changes)
+
+   PRINT   : void f(p, up)         ->  print p at base case
+   RETURN  : ArrayList f(p, up)    ->  base case returns list with p,
+                                       parents merge with addAll
+   COUNT   : int f(p, up)          ->  base case returns 1,
+                                       parents add the children's counts
+
+TEMPLATE TO MEMORIZE (print version)
+
+   void solve(String p, String up) {
+       if (up.isEmpty()) {            // 1. base case
+           System.out.println(p);
+           return;
+       }
+       char ch = up.charAt(0);        // 2. look at first char
+       solve(p + ch, up.substring(1));   // 3. choice A (take)
+       solve(p,      up.substring(1));   // 4. choice B (leave)
+   }
+
+SUBSET FACTS
+   - n elements -> 2^n subsets (including the empty one)
+   - Subsets keep original order; elements need not be adjacent
+   - Iterative method: start with [[]], for each number copy all subsets + add it
+   - Duplicates: SORT first; for a repeated number extend only the subsets
+     created in the previous step (start = end + 1)
+
+COMMON MISTAKES (avoid!)
+   1. Forgetting the base case (-> StackOverflowError)
+   2. Using outer.size() directly in the inner for-loop (infinite loop)
+   3. Adding to the same inner list instead of making a COPY
+   4. char + char gives an int (not a String). Use "" + ch or a String on one side.
+   5. Forgetting to SORT the array in the duplicates problem
+   6. Using substring(1) vs substring(5)/(3): the number is the LENGTH of the
+      word you want to skip
+   7. In permutations, loop must go to i <= p.length() (inclusive), because
+      there is one more position than there are letters
+
+PRACTICE IDEAS (to lock the concept)
+   - Subsequences of "abcd" (expect 16)
+   - Skip every 'b' and "xy" in a string
+   - Subsets of [1,2,3,4] using both methods
+   - Subsets of [4,4,4,1,4] with duplicates (sort first!)
+   - Dice with target 6 and 4-sided dice using diceFace
+   - Count permutations of "abcde" (expect 120)
+
+ONE-LINE SUMMARY
+   "For every element, decide TAKE or IGNORE, recurse on the rest, and
+    collect the leaves - that is the entire subset pattern."

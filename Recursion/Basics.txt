@@ -1,0 +1,201 @@
+Recusion: Function calling itself repeatedly 
+
+While the function is work is not finished it will remain in stack when it get finished it get removed from stack and memory is resorted.
+Every call of function will be filled again again.
+
+Base condition:
+where you want to stop program.
+if no base contion is present stack will filled leading to memory to be out of limit => stack overflow error
+
+Why Recusion?
+it helps us in solving bigger / complex problems in a simple way
+can be covert into iteration & vice versa 
+Space Complexity it is not fixed due to recursive call
+
+Q1. Find nth Fibonacci Number
+
+Index:
+0th   1st   2nd   3rd   4th   5th   6th   7th   ...
+ 0     1     1     2     3     5     8     13   ...
+
+Formula:
+
+Fibo(N) = Fibo(N - 1) + Fibo(N - 2)
+
+This is known as the
+"Recurrence Relation".
+
+Example:
+
+Fibo(N - 1)
+= Fibo((N - 1) - 1) + Fibo((N - 1) - 2)
+= Fibo(N - 2) + Fibo(N - 3)
+
+Note:
+The recursive solution repeatedly computes the same Fibonacci numbers,
+which leads to many common (overlapping) subproblems.
+
+Recursive Tree (Example: F(4))
+
+                         F(4)
+                       /      \
+                    F(3)      F(2)
+                   /   \      /   \
+                F(2)  F(1)  F(1)  F(0)
+               /   \
+            F(1)  F(0)
+
+Evaluation Order (as marked):
+1. F(4)
+2. F(3)
+3. Left F(2)
+4. Left F(1)
+5. Left F(0)
+6. Right F(1)
+7. Right F(2)
+8. Right F(1)
+9. Right F(0)
+
+Observation:
+- The recursive algorithm breaks the problem down into smaller subproblems.
+- Some subproblems are solved repeatedly.
+
+Repeated Computations:
+- F(2) is calculated more than once.
+- F(1) is calculated multiple times.
+- F(0) is calculated multiple times.
+
+This repetition is called
+"Overlapping Subproblems."
+
+Base Condition:
+The recursion stops when we already know the answer:
+- F(0) = 0
+- F(1) = 1
+
+NOTE:
+
+How to Understand & Approach a Problem
+
+1. Identify if you can break down the problem into
+   smaller subproblems.
+
+2. Write the recurrence relation, if needed.
+
+3. Draw the recursive tree.
+
+4. Audit (analyze) the tree.
+
+   - Observe the flow of function calls.
+   - See how the functions are getting stacked
+     in the recursion (call stack).
+   - Identify repeated (overlapping) subproblems.
+
+Base Condition:
+
+In this case, we know that:
+
+F(0) = 0
+F(1) = 1
+
+These are the base conditions.
+The recursion stops when these conditions are reached.
+
+Additional Tips for Understanding Recursion
+
+• Identify and focus on the left tree calls and the right tree calls separately.
+
+• Draw the recursion tree repeatedly using a pen and paper
+  until the flow becomes clear.
+
+• Use a debugger to observe the execution flow.
+
+5. See how the values (int, String, etc.) are returned
+   at each step.
+
+   - Observe where each function call returns.
+   - Understand when control comes back to the previous function.
+   - Finally, see when the execution returns to the main function.
+
+
+Important:
+✔ Always make sure to return the result of a function call
+  according to its return type.
+
+Important:
+✔ Variables will be passed with every recursive call.
+
+✔ Before writing a recursive function, always identify:
+   - Arguments
+   - Return Type
+   - Function Body
+
+✔ Decide which half to recurse into
+   (left half or right half) based on the comparison.
+
+Variables (for every recursive function)
+
+1. Arguments (Parameters)
+2. Return Type
+3. Body of the Function
+
+Question:
+Binary Search using Recursion
+
+Key Points:
+
+1. Comparing elements takes O(1) time.
+
+2. In every step, the search space is divided into two halves.
+
+Example:
+
+Initial Search Space:
+N
+
+After 1st Recursive Call:
+N / 2
+
+After 2nd Recursive Call:
+N / 4
+
+After 3rd Recursive Call:
+N / 8
+
+...
+Continue until the search space becomes 1.
+
+Observation:
+At each recursive call, only one half of the array is explored,
+while the other half is discarded.
+
+Time Complexity:
+O(log N)
+
+Recurrence Relation (Binary Search)
+
+F(N) = O(1) + F(N / 2)
+
+Where:
+
+O(1)   → Comparison of the middle element.
+F(N/2) → Recursive call on one half of the array
+          (after dividing the array into two halves).
+
+This is the Recurrence Relation for Binary Search.
+
+--------------------------------------------------
+
+Types of Recurrence Relations
+
+1. Linear Recurrence Relation
+   - The problem size decreases by a constant amount.
+   - Example: Fibonacci Sequence
+     F(N) = F(N - 1) + F(N - 2)
+
+2. Divide and Conquer Recurrence Relation
+   - The problem size is reduced by a constant factor
+     (such as dividing by 2).
+
+   Example: Binary Search
+     F(N) = O(1) + F(N / 2)

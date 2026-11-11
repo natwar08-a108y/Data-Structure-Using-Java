@@ -1,0 +1,116 @@
+CATEGORY 1: Find if array is sorted or not.
+
+arr = [1, 2, 4, 8, 9, 12]
+So, basically array moves from index 0 then moves pointer in right comparing consecutive elements and till it reaches last if yes then array is sorted.
+
+Case: arr = [1, 2, 4, 3, 8, 9, 12]
+Starts from 1st element compare moves when it reaches 4, 3 it stops!
+No sense to check other.
+
+Lets see how we can apply recursion here:
+check whether arr[i] < arr[i+1] && apply recursion in rest part.
+Array is modified for other 
+
+Implementation: 1, 2, 4, 8, 9, 12  
+                      |
+True            1 < 2 && (1, 2, 4, 8, 9, 12 , 1 <- here it is telling to check from index 1 array remain same)
+                      |
+True            2 < 4 && (1, 2, 4, 8, 9, 12 , 2) 
+                      |
+True            4 < 8 && (1, 2, 4, 8, 9, 12 , 3)
+                      |
+True            8 < 9 && (1, 2, 4, 8, 9, 12 , 4)
+                      |
+True            9 < 12 && (1, 2, 4, 8, 9, 12 , 5)
+Return true as entire array is sorted.
+
+CATEGORY 2: Linear Search with recursion: 
+Question: arr = [3, 2, 1, 18, 9], target = 18
+(arr, target , 0)
+     |
+if (arr[0]==target) || (arr, target, 1)
+either one of statement is true untill both the elements are false result will be false.
+If found the element that will return true else search for rest part 
+instead of returning true return index value.
+
+Note we can apply recursion in back direction also.
+See Find element to see its implementation.
+
+Here how ArrayList return works:
+arr = [1, 2, 3, 4, 4, 8], target = 4
+ans = [3, 4]
+
+fun(arr, target, index, list)
+    if(index = end){ // we reached array end
+     return list;
+    }
+    if(target == arr(index))
+     add in list
+     keep going ...
+
+Doubts ? 
+how is it getting added in the list it is all effect of reference variable.
+all the list point to same reference object in heap. if any one these changes changes all the list gets manipulated at once.
+Here, different reference variable are created.
+
+Internal Working:
+((1, 2, 3, 4, 4, 8) , (target = 4), (index=0), empty arraylist = [])
+                       |
+((2, 3, 4, 4, 8) , (target = 4), (index=1), empty arraylist = [])
+                       |
+((3, 4, 4, 8) , (target = 4), (index=2), empty arraylist = [])
+                       |
+((4, 4, 8) , (target = 4), (index=3), arraylist = [3])  ---> list.add(3)
+                       |
+((4, 8) , (target = 4), (index=4), arraylist = [3, 4])  ---> list.add(4)
+                       |
+((8) , (target = 4), (index=5), arraylist = [3, 4])
+ 
+index = 6 --> Stop!
+
+
+Very Very Important:
+Goal: return list but do not take it in argument.
+
+It means we have to take to take it some where inside now what are challenges??
+return type will be arraylist
+Challenges:
+> Every call will have a new list unlike when we declare it outside or in argument where only reference variable are created
+so, we need some way to pass the data above.
+arr = [1, 2, 3, 4, 4, 8], target = 4, index = 0
+so understand this:
+for i = 0 new arraylist = []
+for i = 1 new arraylist = []
+for i = 2 new arraylist = []
+for i = 3, target = 4, new arraylist = [3] 
+>> Very important point here is that it will not be present for next call nor future call nor past call will know about this in every call it create a brand new array list.
+for i = 4, target = 4, new arraylist = [4] 
+for i = 5, target = 4, new arraylist = []
+
+and when we return it will contain nill or last index 
+
+So, How we will collect these individual answer??
+one thing we can do is that when the arraylist is returning from top to bottom we should check if the array contain any element at that level ???
+if yes then add that element in array list.
+
+
+Binary Search Using Recursion:
+Here we will not take a pivot element we will look for cases
+*******************************************************************************************************************
+Rotated Binary Search:
+arr = [5, 6, 7, 8, 9, 1, 2, 3]
+calculate mid = 7 
+Case 1: if arr[start] <= arr[mid]
+ Check if key is also in this range :
+   if key >= arr[start] & <= arr[mid]
+      end = mid - 1
+   else:
+     start = mid + 1
+Case 2: if this is not (arr[start] <= arr[mid]):
+Means First part is not sorted
+Check if key is 2nd half means sorted half:
+  if key >= arr[mid] & <= arr[end]
+      start = mid + 1
+   else:
+       end = mid - 1
+ *************************************************************************************************************************  

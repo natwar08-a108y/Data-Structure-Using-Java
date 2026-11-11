@@ -1,0 +1,46 @@
+Pritting pattern using recursion:
+  0 1 2 3
+4 * * * *
+3 * * *
+2 * *
+1 *
+
+keep printing * in a row till column is not equal to row.
+fun(r, c)
+(4, 0) - (4, 1) - (4, 2) - (4, 3) - [Stop r = c (4, 4)] - newline
+(3, 0) - (3, 1) - (3, 2) - [Stop r = c (3, 3)] - newline
+(2, 0) - (2, 1) - [Stop r = c (2, 2)] - newline
+(1, 0) - [Stop r = c (1, 1)] - newline
+
+So, return back from (1, 0)
+
+Same logic we used in bubble sort where largest element reaches end in each turn 
+There we swap till it reaches its end.
+
+4, 3, 2, 1      (3, 0)
+  ↓
+3, 4, 2, 1       (3, 1)
+  ↓
+3, 2, 4, 1       (3, 2)
+  ↓                 ↓
+(3, 2, 1) (4)     (2, 0)
+
+Here array is passed in argument that leads to creation of reference array leading to change in step 
+
+Selection sort:
+[ 4, 3, 2, 8, 1 ]
+  
+[ 4, 3, 2, 1 ], 8
+
+[ 1, 3, 2 ], 4, 8
+
+[ 1 ] [ 2 ], 3, 4, 8
+  ↓
+( 1, 2, 3, 4, 8 )
+
+this is same as we did in triangle after every traverse till r=c we print new Line 
+ so we will be (row, col, max)
+ so this maximum is passed to future call as well.
+
+Whenever you have to pass an argument in future function cvall put it in argument.
+so, basically when we reach the end of selection sort we swap last element with max element

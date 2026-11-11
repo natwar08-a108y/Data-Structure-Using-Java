@@ -1,0 +1,487 @@
+PART 1 : WHAT IS A PERMUTATION?
+
+A permutation is an ARRANGEMENT of all the characters of a string, where
+the ORDER MATTERS.
+
+   For "ab":      ab   ba                          -> 2 permutations
+   For "abc":     abc  acb  bac  bca  cab  cba     -> 6 permutations
+
+Total number of permutations of N distinct characters:
+
+        N!   (N factorial)  =  N x (N-1) x (N-2) x ... x 1
+
+   N = 1  ->   1
+   N = 2  ->   2
+   N = 3  ->   6        (the "3! = 6" circled in the notes)
+   N = 4  ->  24
+   N = 5  -> 120
+
+Difference from Subsets (previous topic)
+   Subsets      : pick or don't pick, order of original stays ("ab" only, never "ba")
+   Permutations : use EVERY character, but in every possible ORDER ("ab" and "ba" both)
+
+
+PART 2 : HOW TO THINK ABOUT IT  (the key idea)
+Remember the golden recursion rule: BREAK A BIG PROBLEM INTO SMALLER PROBLEMS.
+
+   Big problem  : arrange "abc"
+   Smaller one  : I already have a nice arrangement of the first few letters,
+                  now where do I put the NEXT letter?
+
+THE IDEA
+   - Keep two strings, as always:
+          p  = processed   (letters already arranged)
+          up = unprocessed (letters not yet placed)
+   - Take the FIRST character of up. Call it  ch.
+   - Insert ch at EVERY POSSIBLE POSITION inside p.
+   - For each position, recurse with up.substring(1).
+
+Real-life picture: you have letters already standing in a line, "ba". A new
+person 'c' arrives. Where can 'c' stand?
+
+        _ b _ a _           3 gaps:
+        c b a      (front)      -> "cba"
+        b c a      (middle)     -> "bca"
+        b a c      (end)        -> "bac"
+
+Start of the whole thing, p = "" (empty), up = "abc":
+   'a' goes into the empty line - only ONE place -> p = "a"
+   'b' goes into "a"  -> 2 places -> "ba" , "ab"
+   'c' goes into "ba" -> 3 places -> "cba","bca","bac"
+   'c' goes into "ab" -> 3 places -> "cab","acb","abc"
+
+   Total = 1 x 2 x 3 = 6 = 3!
+
+
+PART 3 : WHY A LOOP?  HOW MANY RECURSIVE CALLS?
+
+In subsets we had a FIXED number of calls (take / ignore = 2).
+Here the number of calls CHANGES at every level.
+
+   KEY FORMULA (written in the notes):
+
+        number of calls  =  size of p + 1
+
+   Why +1?  A string of length L has L + 1 gaps (positions to insert):
+
+        p = ""    (length 0) -> 1 position
+        p = "a"   (length 1) -> 2 positions   (before a, after a)
+        p = "ba"  (length 2) -> 3 positions
+        p = "abc" (length 3) -> 4 positions
+
+   Picture for p = "ba":
+            b   a
+          ^   ^   ^
+          0   1   2        <- i = 0, 1, 2   (that is  i <= p.length() )
+
+   Because the number depends on p, we cannot write a fixed number of calls.
+   So we use a FOR LOOP, and put the recursive call INSIDE the loop:
+
+        for (int i = 0; i <= p.length(); i++) {
+            ... recursive call ...
+        }
+
+   Note carefully:  i <= p.length()   (LESS THAN OR EQUAL, not just <)
+   The last position (i = p.length()) means "put ch at the very END".
+
+   In the transcript: "this function makes variable number of recursion calls,
+   it depends on the size of the processed string. In every call you make
+   another call with the first character of unprocessed inserted at a
+   different place in processed."
+
+
+PART 4 : SPLITTING p INTO f AND s   (the substring maths)
+
+To insert ch at position i, cut p into TWO pieces around that position:
+
+        f  = p.substring(0, i)         first part  (characters 0 .. i-1)
+        s  = p.substring(i, p.length())  second part (characters i .. end)
+
+   New processed string = f + ch + s
+
+   From the handwritten notes: for p = "ba" (length 2) and i from 0 to 2:
+
+        i = 0 :  f = ""   (0,0)     s = "ba" (0,2)    ->  ""  + ch + "ba"  = ch b a
+        i = 1 :  f = "b"  (0,1)     s = "a"  (1,2)    ->  "b" + ch + "a"   = b ch a
+        i = 2 :  f = "ba" (0,2)     s = ""   (2,2)    ->  "ba"+ ch + ""    = b a ch
+
+   Memory aid:  "f" = front part, "s" = second (rest) part.
+
+   The "(a, b)" in the handwritten notes means substring(a, b):
+        - start index is INCLUDED
+        - end index is EXCLUDED
+        - substring(0,0) and substring(2,2) give "" (empty), and that is fine.
+
+   Substring quick table for p = "ba":
+        p.substring(0,0) = ""
+        p.substring(0,1) = "b"
+        p.substring(0,2) = "ba"
+        p.substring(1,2) = "a"
+        p.substring(2,2) = ""
+
+
+PART 5 : THE FULL RECURSION TREE FOR "abc"
+
+(Left of "/" = p , right of "/" = up.  Circled letter = ch being inserted.)
+
+                         ""  /  abc
+                              |   ch = 'a'
+                              |   p.length()=0 -> 1 call (i = 0)
+                              v
+                          a  /  bc
+                  ______/       \______        ch = 'b'
+                 |   p.length()=1 -> 2 calls (i = 0, 1)
+                 v                          v
+              ba / c                      ab / c         ch = 'c'
+           p.length()=2 -> 3 calls      p.length()=2 -> 3 calls
+          /     |      \               /      |      \
+         v      v       v             v       v       v
+    cba/""  bca/""   bac/""      cab/""   acb/""   abc/""
+
+   Leaves (up = ""):  cba, bca, bac, cab, acb, abc   -> 6 answers
+
+   Counting calls by level:
+        level 0:  1 call      ("" / abc)
+        level 1:  1 call      (a / bc)
+        level 2:  2 calls     (ba / c)  (ab / c)
+        level 3:  6 calls     the leaves
+        Total function calls = 1 + 1 + 2 + 6 = 10
+
+   Why does the number of branches grow 1, 2, 3 ?
+        1st char -> 1 place,  2nd char -> 2 places,  3rd char -> 3 places
+        1 x 2 x 3 = 3! = 6 leaves.
+
+
+PART 6 : CODE 1 - PRINT ALL PERMUTATIONS
+
+   static void permutations(String p, String up) {
+       if (up.isEmpty()) {                    // BASE CASE: nothing left to place
+           System.out.println(p);             // p is now a full permutation
+           return;
+       }
+       char ch = up.charAt(0);                // the character to insert
+
+       for (int i = 0; i <= p.length(); i++) {          // every possible position
+           String f = p.substring(0, i);                // part before position i
+           String s = p.substring(i, p.length());       // part from position i
+           permutations(f + ch + s, up.substring(1));   // insert ch, remove it from up
+       }
+   }
+
+   Call:  permutations("", "abc");
+
+   LINE-BY-LINE
+      1) Base case: when up is empty, every character has been placed.
+         So p is complete -> print it.
+      2) ch = first character of up (the one we are about to place).
+      3) Loop i = 0 ... p.length()  -> every gap in p.
+      4) f and s = the two pieces of p around gap i.
+      5) f + ch + s  = p with ch sneaked in at gap i.
+      6) up.substring(1) = remaining letters (ch is now used).
+
+   Output:
+        cba
+        bca
+        bac
+        cab
+        acb
+        abc
+
+   (The order looks "reverse-ish" because the first call to run is i = 0, i.e.
+    put the new char at the FRONT. It is still all 6 permutations.)
+
+   NOTE (from transcript): a function whose number of recursive calls depends
+   on the length of p  -> we say "variable number of function calls".
+
+
+PART 7 : DRY RUN  (step by step, permutations("", "abc"))
+
+Call 1:  p = ""     up = "abc"    ch = 'a'
+         loop i = 0 to 0 (p.length() = 0)
+           i=0 : f = ""   s = ""   -> f+ch+s = "a"
+                 -> Call 2 : permutations("a", "bc")
+
+Call 2:  p = "a"    up = "bc"     ch = 'b'
+         loop i = 0 to 1
+           i=0 : f = ""   s = "a"  -> "ba"
+                 -> Call 3 : permutations("ba", "c")
+           i=1 : f = "a"  s = ""   -> "ab"
+                 -> Call 6 : permutations("ab", "c")     (runs AFTER call 3 finishes)
+
+Call 3:  p = "ba"   up = "c"      ch = 'c'
+         loop i = 0 to 2
+           i=0 : f="",   s="ba" -> "cba"  -> Call 4: permutations("cba","")  PRINT cba
+           i=1 : f="b",  s="a"  -> "bca"  -> PRINT bca
+           i=2 : f="ba", s=""   -> "bac"  -> PRINT bac
+         loop ends, return to Call 2
+
+Call 2 continues with i = 1  ->  Call 6 (p="ab", up="c")
+           i=0 : f="",   s="ab" -> "cab"  -> PRINT cab
+           i=1 : f="a",  s="b"  -> "acb"  -> PRINT acb
+           i=2 : f="ab", s=""   -> "abc"  -> PRINT abc
+         loop ends, return to Call 2, loop ends, return to Call 1, done.
+
+Important point: p is NEVER modified. f + ch + s creates a NEW String each time
+(strings are immutable), so each call has its own p.
+
+
+PART 8 : CODE 2 - RETURN AN ARRAYLIST OF PERMUTATIONS
+
+Question: "Instead of printing, RETURN all permutations in an ArrayList."
+
+Key idea (already learned in Subsets notes):
+   - Do NOT pass the list as an argument.
+   - Every call creates its OWN LOCAL list.
+   - Each call collects the lists returned by its child calls using addAll.
+   - Base case returns a list containing the single answer p.
+
+   static ArrayList<String> permutationsList(String p, String up) {
+       if (up.isEmpty()) {
+           ArrayList<String> list = new ArrayList<>();
+           list.add(p);                      // the single answer found at this leaf
+           return list;
+       }
+       char ch = up.charAt(0);
+
+       // local to this call
+       ArrayList<String> ans = new ArrayList<>();
+
+       for (int i = 0; i <= p.length(); i++) {
+           String f = p.substring(0, i);
+           String s = p.substring(i, p.length());
+           ans.addAll(permutationsList(f + ch + s, up.substring(1)));   // collect child answers
+       }
+       return ans;                            // pass everything to the parent
+   }
+
+   Call:
+        ArrayList<String> ans = permutationsList("", "abc");
+        System.out.println(ans);
+
+   Output:   [cba, bca, bac, cab, acb, abc]
+
+WHY IS "ans" CREATED INSIDE THE FUNCTION?  (explained in the video)
+   Every call has its own ans (the comment says "local to this call").
+   They do not share. The parent just gathers (addAll) what the children
+   returned. So the answers travel UP the tree as the calls finish.
+
+   Mini example  permutationsList("", "ab"):
+
+        Call A: p="", up="ab", ch='a', ans=[]
+            i=0 -> child B = permutationsList("a", "b")
+                   B: p="a", up="b", ch='b', ans=[]
+                       i=0 -> child C = permutationsList("ba","")  -> ["ba"]
+                              ans = ["ba"]
+                       i=1 -> child D = permutationsList("ab","")  -> ["ab"]
+                              ans = ["ba","ab"]
+                       B returns ["ba","ab"]
+            A: ans.addAll(["ba","ab"]) -> ans = ["ba","ab"]
+            A returns ["ba","ab"]
+
+   BIG DIFFERENCE vs print version:
+        Print version : prints at the BASE CASE (answers appear immediately).
+        List version  : answers are collected and RETURNED up the tree.
+
+   Tip from video: if you ever need to see the final answer, check what is
+   returned at the TOP (the first call); each level just adds what children give.
+
+
+PART 9 : CODE 3 - COUNT THE NUMBER OF PERMUTATIONS
+
+Question: "Don't print or store the permutations - just tell me HOW MANY."
+(We already know the answer is N!, but this is how recursion counts.)
+
+IDEA
+   - Every leaf is ONE permutation -> base case returns 1.
+   - Every parent adds up what its children return.
+
+   static int permutationsCount(String p, String up) {
+       if (up.isEmpty()) {
+           return 1;                          // one complete permutation found
+       }
+       int count = 0;                         // local to this call
+       char ch = up.charAt(0);
+       for (int i = 0; i <= p.length(); i++) {
+           String f = p.substring(0, i);
+           String s = p.substring(i, p.length());
+           count = count + permutationsCount(f + ch + s, up.substring(1));
+       }
+       return count;
+   }
+
+   Call:    System.out.println(permutationsCount("", "abcd"));
+   Output:  24        (4! = 24)
+
+   Trace for "abc":
+        leaves each return 1.
+        (ba / c) : 3 children x 1 = 3   (cba, bca, bac)
+        (ab / c) : 3 children x 1 = 3
+        (a / bc) : 3 + 3 = 6
+        ("" / abc): 6
+        => 6
+
+   This is the same pattern as in Dice and Phone Pad (base case returns 1,
+   parent sums the children).
+
+
+PART 10 : Permutations.java
+
+import java.util.ArrayList;
+
+public class Permutations {
+    public static void main(String[] args) {
+//        permutations("", "abc");
+
+//        ArrayList<String> ans = permutationsList("", "abc");
+//        System.out.println(ans);
+
+        System.out.println(permutationsCount("", "abcd"));
+    }
+
+    static void permutations(String p, String up) {
+        if (up.isEmpty()) {
+            System.out.println(p);
+            return;
+        }
+        char ch = up.charAt(0);
+        for (int i = 0; i <= p.length(); i++) {
+            String f = p.substring(0, i);
+            String s = p.substring(i, p.length());
+            permutations(f + ch + s, up.substring(1));
+        }
+    }
+
+    static ArrayList<String> permutationsList(String p, String up) {
+        if (up.isEmpty()) {
+            ArrayList<String> list = new ArrayList<>();
+            list.add(p);
+            return list;
+        }
+        char ch = up.charAt(0);
+
+        // local to this call
+        ArrayList<String> ans = new ArrayList<>();
+
+        for (int i = 0; i <= p.length(); i++) {
+            String f = p.substring(0, i);
+            String s = p.substring(i, p.length());
+            ans.addAll(permutationsList(f + ch + s, up.substring(1)));
+        }
+        return ans;
+    }
+
+    static int permutationsCount(String p, String up) {
+        if (up.isEmpty()) {
+            return 1;
+        }
+        int count = 0;
+        char ch = up.charAt(0);
+        for (int i = 0; i <= p.length(); i++) {
+            String f = p.substring(0, i);
+            String s = p.substring(i, p.length());
+            count = count + permutationsCount(f + ch + s, up.substring(1));
+        }
+        return count;
+    }
+
+}
+
+Output of main as written above:   24
+(Uncomment the first two commented blocks in main to see the print and list
+ versions for "abc".)
+
+
+PART 11 : COMPLEXITY ANALYSIS
+
+Let N = length of the string.
+
+NUMBER OF PERMUTATIONS = N!   (leaves of the tree)
+
+TIME COMPLEXITY :  O( N * N! )     (the standard answer)
+   - There are N! complete permutations.
+   - Building each one involves creating Strings (substring and concatenation)
+     of up to N characters.
+   - Total function calls in the tree is of the order of N! as well
+     (for N = 3 it was 10 calls vs 6 leaves).
+   - So about N! calls x O(N) string work each = O(N * N!).
+
+SPACE COMPLEXITY
+   - Print version : recursion depth is N (one call per character placed),
+                     each call holds strings of length up to N
+                     -> about O(N) frames, i.e. O(N^2) character storage worst case.
+                     (Most people just say O(N) for recursion stack depth.)
+   - List version  : you must also STORE all answers -> O(N * N!) extra space.
+   - Count version : only the stack -> O(N) depth.
+
+HOW FAST DOES N! GROW?   (why permutation problems only work for small N)
+        N = 5   ->           120
+        N = 8   ->        40,320
+        N = 10  ->     3,628,800
+        N = 12  ->   479,001,600
+   So keep inputs small (N up to about 10 or 11 in practice).
+
+Comparison with earlier topics
+        Subsets      : 2^N answers
+        Permutations : N! answers   (grows MUCH faster)
+
+
+PART 12 : COMMON DOUBTS, MISTAKES AND CHEAT SHEET
+
+DOUBTS (beginner questions answered)
+
+Q1. Why is the loop  i <= p.length()  and not  i < p.length()?
+    A string of length L has L + 1 places to insert (the extra one is the end).
+    With "<" you'd miss the "put it at the end" case and lose permutations.
+
+Q2. Why does the first call have only one iteration?
+    p = "" has length 0 -> 0 + 1 = 1 place. The first letter has only one place.
+
+Q3. Why do we pass up.substring(1)?
+    The first letter of up (ch) has just been placed. We must remove it so the
+    next call handles the next letter. Without it, recursion never ends.
+
+Q4. Is p changed by the loop?
+    No. Strings are immutable. f + ch + s builds a NEW string for the child
+    call; the current call's p stays "ba" through the whole loop.
+
+Q5. Why is the answer ArrayList created inside (local) and not passed?
+    Every call gets a brand-new list; children return their lists to the
+    parent and the parent merges them with addAll. No shared list needed.
+
+Q6. What if the string has repeated letters (like "aab")?
+    This code treats each position as different, so it will produce duplicate
+    permutations (e.g. "aab" appears more than once). Removing duplicates
+    needs extra handling (a Set, or skipping repeated characters). Not covered
+    in this video.
+
+CHEAT SHEET
+
+   Problem pattern          | Calls per level          | Function skeleton
+   -------------------------|--------------------------|---------------------------
+   Skip chars               | 1                        | if / else
+   Subsets / subsequences   | 2 (take, ignore)         | 2 calls
+   Dice / Phone pad         | up to 6 / 3 (fixed set)  | for loop of calls
+   PERMUTATIONS             | p.length() + 1 (varies)  | for loop over positions
+
+   Template to memorize:
+
+        void permute(String p, String up) {
+            if (up.isEmpty()) { print(p); return; }
+            char ch = up.charAt(0);
+            for (int i = 0; i <= p.length(); i++) {
+                String f = p.substring(0, i);
+                String s = p.substring(i);
+                permute(f + ch + s, up.substring(1));
+            }
+        }
+
+   Same logic, three outputs:
+        PRINT  -> void, print p at the base case
+        LIST   -> returns ArrayList, base case returns [p], parents addAll
+        COUNT  -> returns int, base case returns 1, parents add up
+
+   Facts to remember:
+        - Permutations of N distinct chars = N!
+        - Calls at each node = p.length() + 1
+        - Leaves of the tree = N!
+        - Time O(N * N!)

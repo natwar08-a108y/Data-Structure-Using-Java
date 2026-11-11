@@ -1,0 +1,45 @@
+=================================================================================================================================================================================
+Question 1 : Factorial of a number:
+N = 5 => 5! = 5 x 4 x 3 x 2 x 1
+fact(5) = 5 * fact(4)
+fact(4) = 4 * fact(3)
+fact(3) = 3 * fact(2)
+fact(2) = 2 * fact(1) ---> stop here return fact(1) as 1
+
+fact(5) = 5 * fact(4) = 5 * 4 * fact(3) = 5 * 4 * 3 * fact(2) = 5 * 4 * 3 * 2 * fact(1) = 5 * 4 * 3 * 2 * 1
+f(n) = n * f(n-1)
+
+Question 2 : Sum of digits / product of digits 
+N = 1342 
+rem = N%10 & N = N/10
+f(1342) = 1 + f(342) = 1 + 3 + f(42) = 1 + 3 + 4 + f(2) = 1 + 3 + 4 + 2
+f(n) = f(n/10) + f(n%10) => for addition 
+f(n) = f(n/10) + f(n%10) => for multiplication
+
+n-- means use n then decreement 
+--n means decrement n first then use n 
+
+======================================================================================================================================================================================
+Question: Reverse a number
+N = 1824 
+Approach 1: (easiest)
+Take the last digit as call next other part 
+then multiply last digit with 10 and last digit from remaining part
+Add recursively and call it again again till n = 0 
+
+Example: N = 1342
+2 + f(134) = 2*10 + 4 + f(13) = 24*10 + 3 + f(1) = 243*10 + 1 = 2431 ans 
+
+Approach 2: yaha ham digit-1 ko 10 ki power mai dalke multiply kar denge 
+rem * 10^(arg-1) + f(N/10,arg-1)
+Ex: 1234
+4 * 1000 + f(123) = 4000 + 3*100 + f(12) = 4000 + 3*100 + 2*10 + f(1) = 4321
+======================================================================================================================================================================
+Question: Count no. guess in a number 
+
+N = 30204
+here we will follow a simple approach here in one argument we will take a number itself which keeps on decreasing by 10 and in 2nd argument we will take a counter if N%10 is 0 then 
+simply increment counter with 1 otherwise no increment of counter keep making N = N/10
+and when N becomes 0 return count as answer
+ or approach as per binary search using two pointer and count 0 
+ 

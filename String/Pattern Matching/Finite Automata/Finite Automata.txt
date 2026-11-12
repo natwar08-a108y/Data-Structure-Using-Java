@@ -1,0 +1,290 @@
+                 STRING MATCHING USING FINITE AUTOMATA
+1. INTRODUCTION:
+
+Finite Automata is a Pattern Matching Algorithm that uses a
+Finite State Machine (FSM) to search for a pattern inside a text.
+
+Unlike Naive String Matching:
+- It does not restart comparison from the beginning after every mismatch.
+- It uses predefined states and transitions.
+- It processes each text character exactly once.
+
+IMPORTANT:
+A Finite Automaton represents how many characters of the pattern
+have been matched so far.
+
+2. BASIC CONCEPTS:
+
+Finite Automaton consists of:
+
+1. States (Q):
+   Represent the number of pattern characters matched.
+
+2. Alphabet (Σ):
+   Set of possible input characters.
+
+3. Transition Function (δ):
+   Determines the next state based on the current state
+   and the incoming character.
+
+4. Initial State:
+   State 0, where no pattern character has been matched.
+
+5. Final / Accepting State:
+   State m, where the complete pattern has been matched.
+
+Where:
+m = Length of Pattern.
+
+3. HOW STATES WORK?
+
+Suppose:
+
+Pattern = "ABC"
+
+We create states:
+
+q0 = No character matched
+q1 = A matched
+q2 = AB matched
+q3 = ABC matched
+
+So:
+
+q0 --A--> q1
+q1 --B--> q2
+q2 --C--> q3
+
+Here, q3 is the accepting state because the complete pattern
+has been matched.
+
+IMPORTANT:
+If a mismatch occurs, the transition function decides the
+next state instead of always returning to state 0.
+
+4. TRANSITION FUNCTION:
+
+δ(q, c) = Next State
+
+Where:
+- q = Current state.
+- c = Incoming character.
+- δ = Transition function.
+
+The transition function determines the length of the longest
+prefix of the pattern that is also a suffix of:
+
+Pattern[0 : q] + c
+
+In simple words:
+It checks how many starting characters of the pattern can
+still be considered matched after receiving the next character.
+
+5. COMPLETE EXAMPLE:
+
+Text    = "ABABABC"
+Pattern = "ABABC"
+
+Pattern length = 5
+
+Alphabet = {A, B, C}
+
+States:
+
+q0 = Nothing matched
+q1 = A
+q2 = AB
+q3 = ABA
+q4 = ABAB
+q5 = ABABC (Accepting State)
+
+TRANSITION TABLE:
+
+Current State     A     B     C
+---------------------------------
+q0                1     0     0
+q1                1     2     0
+q2                3     0     0
+q3                1     4     0
+q4                3     0     5
+q5                1     2     0
+
+NOTE:
+The accepting state q5 is used to report a match.
+For continued searching, transitions from q5 allow overlapping
+matches to be detected.
+
+6. DRY RUN:
+
+Text    = A B A B A B C
+Pattern = A B A B C
+
+Initial State = q0
+
+Index:  0 1 2 3 4 5 6
+Text:   A B A B A B C
+
+STEP 1:
+
+Current State = q0
+Input = A
+
+δ(q0, A) = q1
+
+STEP 2:
+
+Current State = q1
+Input = B
+
+δ(q1, B) = q2
+
+STEP 3:
+
+Current State = q2
+Input = A
+
+δ(q2, A) = q3
+
+STEP 4:
+
+Current State = q3
+Input = B
+
+δ(q3, B) = q4
+
+STEP 5:
+
+Current State = q4
+Input = A
+
+δ(q4, A) = q3
+
+WHY q3?
+
+The matched sequence was ABABA.
+Its longest suffix that is also a prefix of ABABC is ABA.
+
+Therefore, 3 characters remain matched.
+
+STEP 6:
+
+Current State = q3
+Input = B
+
+δ(q3, B) = q4
+
+STEP 7:
+
+Current State = q4
+Input = C
+
+δ(q4, C) = q5
+
+We reached the accepting state q5.
+
+PATTERN FOUND!
+
+Starting Index = 2 (0-based)
+Starting Index = 3 (1-based)
+
+7. ALGORITHM:
+
+FINITE_AUTOMATA_MATCHER(Text, Pattern):
+
+    n = length(Text)
+    m = length(Pattern)
+
+    Construct transition table δ.
+
+    state = 0
+
+    for i = 0 to n-1:
+
+        state = δ(state, Text[i])
+
+        if state == m:
+            Print "Pattern found at index", i-m+1
+
+8. PREPROCESSING:
+
+Before searching, we construct the transition table.
+
+For a pattern of length m and alphabet size |Σ|:
+
+- Number of states = m + 1
+- Number of transitions = (m + 1) x |Σ|
+
+The transition table is calculated using the pattern itself.
+
+Preprocessing Time:
+O(m x |Σ|) using the standard efficient construction.
+
+9. TIME COMPLEXITY:
+
+Let:
+- n = Length of Text
+- m = Length of Pattern
+- |Σ| = Size of Alphabet
+
+Preprocessing:
+O(m x |Σ|)
+
+Pattern Searching:
+O(n)
+
+Total Time Complexity:
+O(m x |Σ| + n)
+
+Space Complexity:
+O(m x |Σ|) for storing the transition table.
+
+IMPORTANT:
+Once the transition table is constructed, each text character
+requires only one transition lookup, which takes O(1) time.
+
+10. ADVANTAGES:
+
+1. No repeated character comparisons during searching.
+2. Each text character is processed only once.
+3. Searching takes O(n) time after preprocessing.
+4. Useful when searching multiple texts for the same pattern.
+5. Handles overlapping pattern occurrences.
+
+11. DISADVANTAGES:
+
+1. Requires preprocessing to construct the transition table.
+2. Requires additional memory for storing transitions.
+3. Large alphabets can increase preprocessing time and space.
+4. Not always efficient for a single short text search.
+
+12. COMPARISON:
+
+Naive String Matching:
+- Direct character-by-character comparison.
+- Shifts window by one position.
+- Worst Case: O(n x m).
+
+Rabin-Karp:
+- Uses Hashing and Rolling Hash.
+- Expected Case: O(n + m).
+- Worst Case: O(n x m).
+
+KMP:
+- Uses LPS Array.
+- Reuses previously matched prefix information.
+- Time: O(n + m).
+
+Finite Automata:
+- Uses a Transition Table.
+- Each text character requires one transition.
+- Total Time: O(m x |Σ| + n).
+
+13. IMPORTANT OBSERVATIONS:
+
+1. State represents the number of pattern characters matched.
+2. State 0 is the initial state.
+3. State m is the accepting state.
+4. δ(q, c) determines the next state.
+5. Transition table is constructed during preprocessing.
+6. Searching takes O(n) time after preprocessing.
+7. It can detect multiple and overlapping occurrences.

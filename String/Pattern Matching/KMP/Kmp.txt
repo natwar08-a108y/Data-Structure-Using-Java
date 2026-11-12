@@ -1,0 +1,441 @@
+Example 1:
+
+String:  a b c d e f g h
+Pattern: d e f
+
+Here we use 2 pointers i and j for String and Pattern respectively.
+
+Now compare i and j.
+
+String[i=0] != Pattern[j=0]
+Shift i = 1
+
+String[i=1] != Pattern[j=0]
+Shift i = 2
+
+String[i=2] != Pattern[j=0]
+Shift i = 3
+
+Now:
+
+String[3] == Pattern[0]  (d == d)
+String[4] == Pattern[1]  (e == e)
+String[5] == Pattern[2]  (f == f)
+
+All characters match.
+
+Return index = 3.
+
+So, basically we are looking for character-by-character comparison
+and shifting the window one position at a time.
+
+Example 2: Problem with Naive Approach
+
+String:  a a a a a a a b
+Pattern: a a a b
+
+Here:
+
+At i = 0:
+String[0] == Pattern[0]  (a == a)
+String[1] == Pattern[1]  (a == a)
+String[2] == Pattern[2]  (a == a)
+String[3] != Pattern[3]  (a != b)
+
+Mismatch!
+
+Now shift the window by ONE position.
+
+At i = 1:
+String[1] == Pattern[0]  (a == a)
+String[2] == Pattern[1]  (a == a)
+String[3] == Pattern[2]  (a == a)
+String[4] != Pattern[3]  (a != b)
+
+Mismatch again!
+
+At i = 2:
+String[2] == Pattern[0]
+String[3] == Pattern[1]
+String[4] == Pattern[2]
+String[5] != Pattern[3]
+
+Mismatch again!
+
+This continues until the final possible window.
+
+So, Naive apporoach Does not see any patterns just simple comparision char by char.
+
+ Now lets approach to KMP algo:
+ Pattern: a b c d a b c 
+ Prefix means combination from front side:
+ a, ab, abc, abcd 
+  Suffix means combo from Backside:
+c bc abc dabc
+Is there any matching pattern? Yes - abc
+So, this observation will be done by KMP on pattern 
+So, In KMP we make a PIE/ lps table:
+
+P1 : a b c d a b e a b f
+     0 0 0 0 1 2 0 1 2 0
+What is 0, 1 & 2 ?
+0 denotes that no char previously is maching with this char 
+1 denotes that Very first char of Pattern is matching
+2 denotes that 2nd char is matching
+Similarly if ith char will match with another later char we will write 0 on ith char and i on later coming char where i denotes the first time occurrence   
+P2 : a b c d e a b f a b c
+     0 0 0 0 0 1 2 0 1 2 3
+P3 : a a b c a d a a b e
+     0 1 0 0 1 0 1 2 3 0
+                   |
+                Why this is 2?
+As we are on pattern here here 1st a matches1st letter no pattern continues so 2nd matches similarly 3rd char matches. 
+P4 : a a a a b a a c d
+     0 1 2 3 0 1 2 0 0
+
+
+                KNUTH-MORRIS-PRATT (KMP) STRING MATCHING
+
+1. INTRODUCTION:
+
+KMP is an efficient Pattern Matching Algorithm that avoids
+repeated character comparisons.
+
+Problem:
+
+String:   a b a b c a b c a b a b a b d
+Index:    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+
+Pattern:  a b a b d
+
+In Naive String Matching:
+- We shift the window by one position after a mismatch.
+- We start comparing again from the beginning of the pattern.
+- Previously matched information is not reused.
+
+KMP solves this problem using an LPS (Longest Prefix Suffix) array.
+
+2. LPS ARRAY:
+
+LPS = Longest Proper Prefix which is also a Suffix.
+
+Proper Prefix:
+A prefix that does not include the complete string.
+
+Suffix:
+A substring that ends at the last character.
+
+Example:
+
+String = "ABAB"
+
+Prefixes:
+A, AB, ABA
+
+Suffixes:
+B, AB, BAB
+
+Longest Common Prefix and Suffix = "AB"
+
+Therefore:
+LPS = 2
+
+LPS ARRAY FOR OUR PATTERN:
+
+Pattern = a b a b d
+
+Index:   0 1 2 3 4
+Pattern: a b a b d
+LPS:     0 0 1 2 0
+
+Explanation:
+
+a       -> No proper prefix and suffix = 0
+ab      -> No common prefix and suffix = 0
+aba     -> Common prefix/suffix = a = 1
+abab    -> Common prefix/suffix = ab = 2
+ababd   -> No common proper prefix and suffix = 0
+
+Therefore:
+
+LPS = [0, 0, 1, 2, 0]
+
+3. HOW KMP WORKS?
+
+We use two pointers:
+
+i = Pointer for String (Text)
+j = Pointer for Pattern
+
+Conditions:
+
+1. If String[i] == Pattern[j]:
+   - Increment both i and j.
+
+2. If String[i] != Pattern[j]:
+
+   CASE 1: j != 0
+   - Update j = LPS[j-1]
+   - Do not increment i.
+   - Compare the same text character again.
+
+   CASE 2: j == 0
+   - Increment i.
+   - Start checking the next text character.
+
+3. If j == Pattern.length():
+   - Pattern found.
+   - Starting index = i - j.
+   - Continue searching using LPS[j-1] if more matches
+     are required.
+
+IMPORTANT:
+KMP does not move the text pointer backwards.
+It reuses the previously matched prefix information.
+
+4. COMPLETE DRY RUN:
+
+String:   a b a b c a b c a b a b a b d
+Index:    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+
+Pattern:  a b a b d
+Index:    1 2 3 4 5
+
+LPS:      0 0 1 2 0
+
+INITIAL:
+i = 1
+j = 1
+
+STEP 1:
+
+String[1]  = a
+Pattern[1] = a
+
+MATCH!
+
+i = 2, j = 2
+
+STEP 2:
+
+String[2]  = b
+Pattern[2] = b
+
+MATCH!
+
+i = 3, j = 3
+
+STEP 3:
+
+String[3]  = a
+Pattern[3] = a
+
+MATCH!
+
+i = 4, j = 4
+
+STEP 4:
+
+String[4]  = b
+Pattern[4] = b
+
+MATCH!
+
+i = 5, j = 5
+
+STEP 5:
+
+String[5]  = c
+Pattern[5] = d
+
+MISMATCH!
+
+Since j != 1:
+
+j = LPS[j-1]
+j = LPS[3]
+j = 2
+
+Now compare the SAME String[5] again.
+
+String[5]  = c
+Pattern[3] = a
+
+MISMATCH!
+
+j = LPS[1]
+j = 0
+
+Compare again:
+
+String[5]  = c
+Pattern[1] = a
+
+MISMATCH!
+
+Since j = 0:
+
+i = 6
+
+STEP 6:
+
+String[6]  = a
+Pattern[1] = a
+
+MATCH!
+
+i = 7, j = 2
+
+STEP 7:
+
+String[7]  = b
+Pattern[2] = b
+
+MATCH!
+
+i = 8, j = 3
+
+STEP 8:
+
+String[8]  = c
+Pattern[3] = a
+
+MISMATCH!
+
+j = LPS[1] = 0
+
+Compare again:
+
+String[8]  = c
+Pattern[1] = a
+
+MISMATCH!
+
+Since j = 0:
+
+i = 9
+
+STEP 9:
+
+String[9]  = a
+Pattern[1] = a
+
+MATCH!
+
+i = 10, j = 2
+
+STEP 10:
+
+String[10] = b
+Pattern[2] = b
+
+MATCH!
+
+i = 11, j = 3
+
+STEP 11:
+
+String[11] = a
+Pattern[3] = a
+
+MATCH!
+
+i = 12, j = 4
+
+STEP 12:
+
+String[12] = b
+Pattern[4] = b
+
+MATCH!
+
+i = 13, j = 5
+
+STEP 13:
+
+String[13] = a
+Pattern[5] = d
+
+MISMATCH!
+
+j = LPS[4]
+j = 0
+
+Correction: LPS[4] is 0, but the previous four characters
+matched "abab". We can reuse its longest prefix-suffix:
+
+j = LPS[3] = 2
+
+Now compare the SAME String[13] again.
+
+String[13] = a
+Pattern[3] = a
+
+MATCH!
+
+i = 14, j = 4
+
+STEP 14:
+
+String[14] = b
+Pattern[4] = b
+
+MATCH!
+
+i = 15, j = 5
+
+STEP 15:
+
+String[15] = d
+Pattern[5] = d
+
+MATCH!
+
+j = Pattern.length()
+
+PATTERN FOUND!
+
+Starting Index (0-based) = i - j
+                           = 15 - 5
+                           = 10
+
+Starting Index (1-based) = 11
+
+OUTPUT:
+Pattern found at index 10 (0-based)
+Pattern found at index 11 (1-based)
+
+5. TIME COMPLEXITY:
+
+Let:
+- n = Length of Text
+- m = Length of Pattern
+
+LPS Array Construction:
+O(m)
+
+Pattern Searching:
+O(n)
+
+Total Time Complexity:
+O(n + m)
+
+Space Complexity:
+O(m) for storing the LPS array.
+
+6. ADVANTAGES:
+
+1. Avoids repeated character comparisons.
+2. Does not move the text pointer backwards.
+3. Reuses previously matched prefix information.
+4. Efficient for large strings and patterns.
+
+7. IMPORTANT OBSERVATIONS:
+
+1. KMP uses the LPS array to avoid unnecessary comparisons.
+2. LPS stores the longest proper prefix that is also a suffix.
+3. On mismatch, j changes using LPS[j-1].
+4. On mismatch, i remains unchanged when j != 0.
+5. Worst-case time complexity is O(n + m).
+6. No hashing is required.
+

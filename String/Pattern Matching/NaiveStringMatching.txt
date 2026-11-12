@@ -1,0 +1,111 @@
+                     NAIVE STRING MATCHING ALGORITH
+
+Naive String Matching is the simplest pattern-matching algorithm.
+
+It searches for a Pattern inside a Text by comparing characters
+at every possible position using a sliding window.
+
+Example:
+
+Text    = "ApoorvkunalRahul"
+Pattern = "kunal"
+
+Pattern length = 5
+
+We compare the pattern with every substring of length 5:
+
+1. Apoor
+2. poorv
+3. oorvk
+4. orvku
+5. rvkun
+6. vkun a
+7. kunal
+
+When all characters match, the pattern is found.
+
+2. WORKING:
+
+1. Start from index 0 of the text.
+2. Compare each character of the pattern with the corresponding
+   character of the current window.
+3. If all characters match, print the starting index.
+4. If any character mismatches, shift the window by ONE position.
+5. Repeat until all possible windows are checked.
+
+3. DRY RUN:
+
+Text    = "ApoorvkunalRahul"
+Pattern = "kunal"
+
+Pattern length = 5
+
+Index     Window       Result
+--------------------------------
+0         Apoor        Mismatch
+1         poorv        Mismatch
+2         oorvk        Mismatch
+3         orvku        Mismatch
+4         rvkun        Mismatch
+5         vkun a       Mismatch
+6         kunal        MATCH
+
+Output:
+Pattern found at index 6
+
+4. PSEUDOCODE:
+
+NAIVE_STRING_MATCHING(Text, Pattern):
+
+    n = length(Text)
+    m = length(Pattern)
+
+    for i = 0 to n-m:
+
+        j = 0
+
+        while j < m AND Text[i+j] == Pattern[j]:
+            j++
+
+        if j == m:
+            Print "Pattern found at index", i
+
+5. TIME COMPLEXITY:
+
+Let:
+- n = Length of Text
+- m = Length of Pattern
+
+Best Case:
+O(n-m+1) = O(n)
+
+Worst Case:
+O((n-m+1) x m) = O(n x m)
+
+Why worst case?
+
+At every window, almost all characters may match before
+a mismatch occurs, requiring up to m comparisons.
+
+Space Complexity:
+O(1) auxiliary space.
+
+6. ADVANTAGES:
+
+1. Simple and easy to implement.
+2. No preprocessing required.
+3. No extra data structures required.
+
+7. DISADVANTAGES:
+
+1. Repeated character comparisons.
+2. Inefficient for large texts and patterns.
+3. Does not reuse previous matching information.
+
+8. IMPORTANT OBSERVATIONS:
+
+1. Window shifts by exactly ONE position.
+2. Every possible starting position is checked.
+3. No hashing or preprocessing is required.
+4. Worst-case complexity is O(n x m).
+5. It is also called the Brute Force String Matching Algorithm.

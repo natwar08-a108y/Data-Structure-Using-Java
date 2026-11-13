@@ -1,1 +1,233 @@
-  
+Backtracking | Maze Problems | Recursion
+So consider an maze of 3 x 3. You are at one end of diagonal moving from Left to right.
+You have to reach the other side of Diagonal.
+
+You are here 
+\__ __ ___
+|__|__|___|
+|__|__|___|
+|__|__|___| ---> Target To reach 
+
+Condition is that you can move down and right only from any cell.
+ Possible Solution:
+ RRDD
+ DDRR
+ RDDR
+ DRDR 
+ RDRD 
+What to calculate ? How many to reach the target.
+Observe When You reach the bottom most row you have no option rather to move right.
+Similarly if you reach the Right most column you have no option rather to move down.
+
+Let see how we can apply Recursion here:
+ __ __ __ __
+|__|__|__|__|
+|__|_\|__|__| <---| 
+|__|__|__|__|     |
+|__|__|__|__|     |
+|__|__|__|__|     |
+    ^             |
+    |-------------|
+Let Say you reach at box \ either you reached from top corner by DR or RD 
+So, basically you have 4 x 4 grid to cover just including that cell (highlighted by the arrows).
+ DR + Recursion on rest or RD + Recursion on rest.
+   \--- Path till that point.
+
+Recursion Tree:
+
+     You are here 
+      \__ __ ___
+    3 |__|__|___|
+    2 |__|__|___|
+    1 |__|__|___| ---> Target To reach 
+       3   2   1
+          r c
+         (3,3) --> 3 + 3 = 6
+            |
+          /   \
+         /     \
+       (2,3)    (3,2) ---> 3 here 
+         |         |
+1+(1+1) / \      /   \
+= 3    /   \   (3,1)  (2,2) ---> This will return 2 (1 from left subtree 1 from right)
+     (1,3) (2,2)  \-----> This will return 1.
+      |       | 
+      |      /\
+      |     /  \
+      |  (1,2)  (2,1)
+      |   |      |
+From Here Return 1
+
+Base Condition: Whenever you reach r = 1 or c = 1 you have found an answer because as discussed you can go down or right.
+
+Twist: Print the path which can be traced
+This is just processed and unprocessed thing
+         ("",3,3) --> 3 + 3 = 6
+              |
+          /      \
+         /        \
+    (D,2,3)      (R,3,2) 
+         |           |
+        / \      /        \
+       /   \   (RD,3,1)  (RR,2,2) 
+(DD,1,3)   (DR,2,2)  
+      |         | 
+      |      /      \
+(DDR,1,2)   /        \
+      |  (DRD,1,2)  (DRR,2,1)
+      |    |             |
+(DDRR,1,1) (DRDR,1,1)   (DRRD,1,1)
+  \--------Ans --|-----------/
+
+Simply Return Arraylist.
+
+Another twist: You can go diagonally also from now.
+So, Down Right and Diagonal 3 way to move to target
+
+           (3,3) 
+             |
+          /--|--\
+         /---|---\
+    (2,3)  (2,2)  (3,2)
+     /       |        \
+   r>1   r>1 && c>1   c>1
+You cannot go diagonally if you are in the last row or last column.so all condition stated.
+
+Maze with obstacles:
+     You are here 
+      \__ ___ ___
+    3 |__|___|___|
+    2 |__|_x_|___|
+    1 |__|___|___| ---> Target To reach 
+       3   2   1
+x means obstacle where you cannot go.
+False basically Represents the obstacle.
+Note: When You land on new cell, check wether that is river(false) or not.
+If You land on river, Stop the recursion for that call.
+
+         (Path,0,0) 
+            |
+          /   \
+         /     \
+       (1,0)    (0,1) 
+         |         |
+        / \      /   \
+       /   \   (1,1)  (0,2) 
+(2,0) -    (1,1) |         \  
+ |          \-- Stop        \
+ |----> (2,1) --> (2,2)   (1,2) ---> (2,2)
+So, It is stopping the recursion at that point.
+It will be like this:
+ {true, true, true},
+ {true, false, true},
+ {true, true, true}
+
+All the codes are present inside maze.java.
+
+Why We need Backtracking?
+Consider this maze to reach the target and you can go in any direction means top bottom left right up 
+You are here 
+      \__ ___ ___
+    3 |__|___|___|
+    2 |__|___|___|
+    1 |__|___|___| ---> Target To reach 
+       3   2   1
+Which we can simply do recursion?
+         ("",0,0) 
+              |
+          /      \
+         /        \
+       (D,1,0)     (R,0,1) 
+         ____|_____          
+        /    |     \    
+       /     |      \   
+(DD,2,0)  (DR,1,1)   (DU,0,0)  
+                        |--> You are Again repeating the thing and it will never stop
+                        So, Basically we must avoid simple recursion Method.
+                        we are stuck in an endless loop.
+                        so,We donot move back on the same path.
+How to solve ? - All cells that are visited, mark them as false. So, that it does not go there.
+
+You are here 
+      \__ ___ ___
+    0 |F_|___|___|
+    1 |F_|F__|___|
+    2 |F_|___|___| ---> Target To reach 
+       0   1   2
+So, Mark those cell that you visited as false so whenever This type of (DU,0,0) call happen it can avoid that.
+         ("",0,0) 
+           __|___
+          /      \
+         /        \
+       (D,1,0)     (R,0,1) 
+         ____|_____          
+        /    |     \    
+       /     |      \   
+(DD,2,0)  (DR,1,1)   (DU,0,0) --> Avoid Already false return back
+       |
+     /   \
+(DDR,2,1) (DDU,1,0) --> Avoid Already false return back
+       |
+      _|______________
+     /        |       \
+(DDRR,2,2) (DDRU,1,1) (DDRL,2,0) --> False already  
+ \-- Ans       |
+              /  \
+             /    \
+        False     (DDRUR,1,2)
+                     |
+                  (DDLURD,2,2)
+One issue: When You are moving back the array that were marked false are currently False. This will be Problem for future case.
+It will not permit any new path to move into previous covered cell.
+
+Common sense: marking false == I have that cell in my current path.
+So when that path is over, ex: you are in another recursion call, these cells should not be false.
+
+While you are moving back, you restore the maze as it was.
+
+Very basic recursion question:
+
+Q: When do we go back?
+
+A: When the function is returned.
+When you come out of the recursive function -> you are now in the above recursion call.
+Hence, re-mark the cell as T.
+This is known as backtracking.
+
+Grid (3x3):
+   0   1   2
+0 [F] [ ] [ ]
+   |
+   v
+1 (F) [ ] [ ]
+2 [ ] [ ] [ ]
+
+• Path moves from cell (0,0) marked F to cell (1,0) marked False.
+• Upon returning (backtracking), the cell status is restored back to True.
+
+Means when you are moving out of the recursion call you make the changes that you made also become unavailable.
+What if i have not taken this path how will my array look like that is basically backtracking.
+Make the change reverse the change.
+Code for this will be available inside AllPaths.java
+
+Now, You have to print the matrix path as:
+[1,0,0]
+[2,0,0]
+[3,4,5]
+ DDRR
+
+[1,0,0]
+[2,5,6]
+[3,4,7]
+ DDRURD
+
+This way you have to print.
+So we these are basically levels of recusion call you are at.
+Keep in mind that when you go back you should erase that path make it 0 (backtracking).
+So, Here we will be passing an path array and after Adding steps in each step we will restore it back to 0.
+
+Here is the algo:
+* Take a step variable, increment that in each case.
+* Update the path array
+* Print it in base condition
+* Backtrack

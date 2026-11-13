@@ -1,0 +1,202 @@
+Problem Based on Backtracking:
+N-Queens Problem:
+A queen can attack in any direction.
+      \ | /
+     -- Q --
+      / | \
+Problem: You are given N x N board here N = 4 and You have to place 4 Queens on it.
+ __ __ __ __
+|__|__|__|__|
+|__|__|__|__|
+|__|__|__|__|
+|__|__|__|__|
+
+No two Queens should be 1 row or in 1 column or in 1 diagonal
+
+Doubt can be ? 
+How do we know it is recursion or backtracking
+ __ __ __ __
+|_Q|__|__|__| ---> (0,0)- Lets place the queen on very corner now try to run call on remaining boxes 
+|__|__|_Q|__| ---> Check for (1,0) - No (1,1)-No (1,2)- Yes You can 
+|__|__|__|__| ---> Check for (2,0)-No (2,1)-No (2,2)-No (2,3)-No ==> This is Where we need back tracking to erase the thing to find the possibility 
+|__|__|__|__| ---> No Need to check this
+ __ __ __ __
+|_Q|__|__|__|
+|__|__|__|_Q| ---> Check for (1,3) - Yes
+|__|_Q|__|__| ---> Check for (2,0)-No (2,1)-Yes
+|__|__|__|__| ----> Check for (3,0)-No (3,1)-No (3,2)-No (3,3)-No --->Backtrack 
+
+Now we tried all the possibilities for (0,0)
+We Move Q to (0,1)
+So, For each step down we have 4 sub position to check 
+ __ __ __ __
+|__|_Q|__|__|
+|__|__|__|_Q| ---> Check for (1,0)-No (1,1)-No (1,2)-No (1,3)-Yes
+|_Q|__|__|__| ---> Check for (2,0)-Yes
+|__|__|_Q|__| ---> Check for (3,0)-No (3,1)-No (3,2)-Yes
+So, Above is the one of possible answer.
+Similarly We move 4th queen to (3,3) - No Backtrack
+Check 3rd Queen to (2,1)-No (2,2)-No (2,3)-No -->Backtrack 
+2nd cannot move further 
+Shift Position of first Queen in same manner to (0,3) Check in same manner.
+
+This is how NQueen problem is to approached.
+So at each level we have N possibilites to check and to run the recursion call for the remaining portion.
+
+How we check wether to place a Queen in a particular position or not we already know that Below Queen will be placed according to this Queen 
+so, According to top Queen we should place this Queen checking it top col, top-left columns, top-right columns. 
+(r--,c--) [0,r]  (r--,c++) till min. of (r,length-c-1)
+   |     \  |   /
+   |      \ |  /
+ till       Q
+min(r,c)  (r,c)
+
+Space complexity = O(NxN)
+
+N-QUEEN PROBLEM: RECURRENCE RELATION & TIME COMPLEXITY
+
+Recurrence Relation:
+
+T(N) = N * T(N - 1) + O(N^2)
+By Akra-Bazzi Formula (from Time Complexity lecture):
+O(N^3 + N!) = O(N!)  (Final Answer)
+
+[ . | . | . | Q ]  <- Row 1: N choices to place a Queen
+[ X | X | X | X ]  <- Remaining (N - 1) rows to solve recursively
+[ X | X | X | X ]
+[ X | X | X | X ]
+
+3. Explanation for the N-Queen Problem
+
+Why is the Recurrence T(N) = N * T(N - 1) + O(N^2)?
+• N choices per row: In the current row, we try placing a Queen in each of the N columns. For every valid placement, we make a recursive call to solve the remaining (N - 1) rows. This gives the term: N * T(N - 1).
+• O(N^2) work per level: Before placing a Queen in a cell, we check if it is safe (checking the column above, upper-left diagonal, and upper-right diagonal), which takes O(N) time per cell. Doing this across N columns in the row—plus copying or printing the board when a base case is reached—accounts for O(N^2) work at each step.
+
+Why does it simplify to O(N!)?
+
+• When solving the recurrence using the Akra-Bazzi theorem (or recursion tree expansion), the total time evaluates to O(N^3 + N!).
+• Because factorial growth (N!) grows drastically faster than polynomial growth (N^3) for large values of N, we drop the lower-order N^3 term.
+• Thus, the tight upper-bound time complexity for the N-Queen problem is O(N!).
+
+1. Eliminating For Loops
+* You can eliminate for loops with conditions, but then you need another variable in arguments.
+  Example: (board, row, col, targets) -> (0, 0, 4)
+
+2. When to Use Backtracking (BT)
+Note: When a choice can affect future answers, use backtracking (bt).
+
+N-Kight Problem: How to Place N -Knight in NxN 
+
+      [1]   [2]
+       |     |
+  [8]--+     +--[3]
+        \   /
+         (K)
+        /   \
+  [7]--+     +--[4]
+       |     |
+      [6]   [5]
+ __ __ __ __
+|_k|_k|_k|_k| Try for first Row these is the possibility
+|__|__|__|__|
+|__|__|__|__|
+|__|__|__|__|
+(row, col, No. of Knights remaining)
+(0,0,4)
+   |
+(0,1,3)
+   |
+(0,2,2)
+   |
+(0,3,1)---> Since we have found one answer backtrack from next row for other possibility
+
+ __ __ __ __
+|_k|_k|_k|__| 
+|__|_k|__|__|--> Check 4th Knight for (1,0)-No, (1,1) - Yes
+|__|__|__|__|
+|__|__|__|__|
+(0,0,4)
+   |
+(0,1,3)
+   |
+(0,2,2)
+   |
+(1,1,1)---> Since we have found one answer backtrack 
+Check for (1,2) -No (1,3)-No 
+Check for other row (2,0) - No (2,1) No (2,2)-No (2,3)-No
+
+Checks that we are making (r-2,c-1), (r-2,c+1), (r-1,c+2), (r-1,c-2)
+
+Trick to identify wether a question is of backtracking or not: if you place a potential answer is wrong all the outcomes will be wrong.
+And you to backtrack that to get the correct answer.
+
+Sudoku Solver Problem:
+
+Rules of Sudoku:
+
+Given a 9 x 9 board (where 0 represents an empty cell), fill the empty cells with digits from 1 to 9 such that:
+1. Each row must contain digits 1-9 without repetition.
+2. Each column must contain digits 1-9 without repetition.
+3. Each of the nine 3 x 3 sub-boxes of the grid must contain digits 1-9 without repetition.
+
+Visual Board Representation (Initial State):
+
+   0 1 2   3 4 5   6 7 8
+0 [5 3 0 | 0 7 0 | 0 0 0]  ---> First empty cell found at (0,2): Try [1..9]
+1 [6 0 0 | 1 9 5 | 0 0 0]
+2 [0 9 8 | 0 0 0 | 0 6 0]
+  -------+-------+-------
+3 [8 0 0 | 0 6 0 | 0 0 3]  ---> Sub-box starting at (3,6)
+4 [4 0 0 | 8 0 3 | 0 0 1]
+5 [7 0 0 | 0 2 0 | 0 0 6]
+  -------+-------+-------
+6 [0 6 0 | 0 0 0 | 2 8 0]  ---> Sub-box starting at (6,6)
+7 [0 0 0 | 4 1 9 | 0 0 5]
+8 [0 0 0 | 0 8 0 | 0 7 9]
+
+How do we approach this with Backtracking?
+- Instead of passing row and col as function arguments, we only pass the board.
+- In every recursive call, we scan the board to find the first empty cell (board[i][j] == 0).
+- Base Condition: If no empty cells are left (emptyLeft == true), the Sudoku is completely solved -> return true.
+- Try placing numbers from 1 to 9 in that empty cell:
+  - Check if placing the number is valid using isSafe(board, row, col, number).
+  - If safe, place the number (board[row][col] = number) and recursively call solve(board).
+  - If the recursive call returns true, we found the valid solution -> return true.
+  - Backtrack: If the choice leads to a dead end later (returns false), reset the cell back to empty (board[row][col] = 0) and try the next digit.
+
+How to check if a number is safe? (isSafe Logic)
+1. Row Check: Loop i from 0 to 8. If board[row][i] == num -> return false.
+2. Column Check: Loop through every row. If board[r][col] == num -> return false.
+3. 3 x 3 Sub-box Check:
+   We need the top-left starting index (rowStart, colStart) of the 3 x 3 box that contains (row, col).
+
+   Formula to find Box Start Index:
+
+   sqrt = (int) Math.sqrt(board.length)   (For 9x9 board, sqrt = 3)
+   rowStart = row - (row % sqrt)
+   colStart = col - (col % sqrt)
+
+   Examples from handwritten notes:
+   - For cell (3, 6):
+     rowStart = 3 - (3 % 3) = 3 - 0 = 3
+     colStart = 6 - (6 % 3) = 6 - 0 = 6  ---> Box starts at (3, 6)
+   - For cell (7, 4):
+     rowStart = 7 - (7 % 3) = 7 - 1 = 6
+     colStart = 4 - (4 % 3) = 4 - 1 = 3  ---> Box starts at (6, 3)
+   - For cell (6, 8):
+     rowStart = 6 - (6 % 3) = 6 - 0 = 6
+     colStart = 8 - (8 % 3) = 8 - 2 = 6  ---> Box starts at (6, 6)
+   Once we have (rowStart, colStart), we run two nested loops from rowStart to rowStart + 3 and colStart to colStart + 3 to verify no cell already contains num.
+
+SUDOKU SOLVER: TIME & SPACE COMPLEXITY
+
+Time Complexity: O(9^(N^2))
+- For a board of size N x N (where N = 9), there are N^2 total cells (81 cells).
+- In the worst-case scenario (an empty board), for every single cell we try up to 9 possible digits.
+- Therefore, total branching possibilities = 9 * 9 * ... (N^2 times) = O(9^(N^2)).
+
+Space Complexity: O(N^2)
+- Used by the N x N board matrix and the maximum recursion call stack depth (up to N^2 recursive calls when all cells are empty).
+
+Trick to identify Backtracking:
+- When placing a potential digit in a cell can invalidate future cells down the line, and you must undo (reset to 0) that choice to explore other valid paths, use backtracking.

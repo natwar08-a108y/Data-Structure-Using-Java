@@ -1,0 +1,281 @@
+Graph Traversal: 
+the process of visiting every vertex (node) and edge in a graph data structure in a systematic way.
+
+Two primary Methods are:
+1. Depth-First Search (DFS):
+In Binary tree we have 
+• Preorder: Root → Left → Right
+• Inorder: Left → Root → Right
+• Postorder: Left → Right → Root
+
+             1
+            /|\
+           / | \
+          /  |  \
+         /   |   \
+        2    5    3
+        |         |
+        |         |
+        4         6 
+Starting Point: 1
+Make an Adjacency List or Adjacency Matrix.
+1 → 2, 3, 5 
+2 → 1, 4
+3 → 1, 6
+4 → 2
+5 → 1
+6 → 3
+
+Dry run:
+Recursive(1) -> Recursive(2) -> Recursive(4) -> Return 4 back to 2 then return 2 back to 1 Print all
+Recursive(3) -> Recursive(6) -> return 6 back to 3 print all
+Recursive(5) -> return back to function which prints that. 
+Here, Output: 1, 2, 4, 3, 6, 5
+Here, we maintain visited array:
+Index : 0   1   2   3   4   5   6   7   8
+Value : x   T   T   T   T   T   T   T   T   
+
+Algorithm: Iterative DFS Traversal using Stack (1-Based Indexing)
+
+Input:
+- V: Total number of vertices (numbered 1 to V)
+- adj: Adjacency list representing the graph
+- start: The starting vertex
+
+Output:
+- Prints all reachable vertices in Depth-First order.
+
+Steps:
+
+Step 1: Initialize Data Structures
+   - Create a boolean array visited[V + 1] and initialize all elements to false (index 0 is unused).
+   - Create an empty Stack S.
+
+Step 2: Push Starting Vertex
+   - Push start onto the top of Stack S.
+
+Step 3: Traverse Until Stack is Empty
+   - Repeat Steps 4 and 5 while S is not empty:
+
+Step 4: Pop and Check Visited
+   - Pop the top element from S and store it in curr.
+   - If visited[curr] == false:
+     - Set visited[curr] = true.
+     - Print curr.
+
+Step 5: Push Unvisited Neighbors
+   - For each vertex neighbor adjacent to curr in adj[curr] (in reverse order to match recursive DFS):
+     - If visited[neighbor] == false:
+       - Push neighbor onto the top of Stack S.
+
+Step 6: Stop
+   - Exit when S becomes empty.
+
+Complexity:
+- Time Complexity: O(V + E)
+- Space Complexity: O(V) for the visited array and explicit stack
+
+Algorithm: Recursive DFS Traversal for Graph (1-Based Indexing using Boolean Visited Array)
+
+Input:
+- V: Total number of vertices (numbered 1 to V)
+- adj: Adjacency list representing the graph
+- start: The starting vertex
+
+Output:
+- Prints all reachable vertices in Depth-First (Preorder-like) order.
+
+Steps:
+
+Step 1: Initialize Data Structures
+   - Create a boolean array visited[V + 1] and initialize all elements to false (index 0 is unused).
+
+Step 2: Start DFS Traversal
+   - Call the recursive helper function DFS(start, adj, visited).
+
+Step 3: Inside Recursive Function DFS(curr, adj, visited)
+   - Mark visited[curr] = true.
+   - Print curr.
+   - For each vertex neighbor adjacent to curr in adj[curr]:
+     - If visited[neighbor] == false:
+       - Recursively call DFS(neighbor, adj, visited).
+
+Step 4: Backtrack and Stop
+   - When all neighbors of curr are visited, return to the previous recursive call.
+   - Terminate when the initial call DFS(start) finishes.
+
+Complexity:
+- Time Complexity: O(V + E)
+- Space Complexity: O(V) for the visited array and recursion call stack
+
+
+2. Breadth-First Search (BFS):
+             1
+            /|\
+           / | \
+          /  |  \
+         /   |   \
+        2    3    4
+       /\         |
+      /  \        |
+     5    6       7
+                /
+               8 
+BFS uses Queue
+Sequence:
+Considering 1 as starting point:
+Front     Rear             Print Out 
+1           
+2  3  4                         1
+3  4  5  6                      2  1
+4  5  6                         3  2  1
+5  6  7                         4  3  2  1
+6  7                            5  4  3  2  1
+7                               6  5  4  3  2  1
+8                               7  6  5  4  3  2  1
+                                8  7  6  5  4  3  2  1
+So, Order of printing 1 2 3 4 5 6 7 8 
+Note that when a node gets out Her Child gets in Queue in last continuing the sequence
+
+Considering 7 as the starting Sequence:
+Front     Rear             Print Out 
+7           
+4  8                            7
+8  1                            4  7
+1                               8  4  7
+2  3                            1  8  4  7
+3  5  6                         2  1  8  4  7
+5  6                            3  2  1  8  4  7
+6                               5  3  2  1  8  4  7
+                                6  5  3  2  1  8  4  7     
+So, Order of printing: 7 4 8 1 2 3 5 6
+
+How to implement it:
+We wiil use a boolean visited array for every node which is visited we will mark the order if it is false we will mark it true
+
+Consider previous case:
+7 is visited: (0 is invalid)
+Index : 0   1   2   3   4   5   6   7   8
+Value : x   F   F   F   F   F   F   T   F 
+
+4 & 8 are visted:
+Index : 0   1   2   3   4   5   6   7   8
+Value : x   F   F   F   T   F   F   T   T 
+
+1 is visited:
+Index : 0   1   2   3   4   5   6   7   8
+Value : x   T   F   F   T   F   F   T   T 
+
+2 & 3 are visited:
+Index : 0   1   2   3   4   5   6   7   8
+Value : x   T   T   T   T   F   F   T   T 
+
+5 & 6 are visited:
+Index : 0   1   2   3   4   5   6   7   8
+Value : x   T   T   T   T   T   T   T   T 
+
+Algorithm: BFS Traversal (1-Based Indexing using Boolean Visited Array)
+
+Input:
+- V: Total number of vertices (numbered 1 to V)
+- adj: Adjacency list representing the graph
+- start: The starting vertex
+
+Output:
+- Prints all reachable vertices in Breadth-First order.
+
+Steps:
+
+Step 1: Initialize Data Structures
+   - Create a boolean array visited[V + 1] and initialize all elements to false (index 0 is unused).
+   - Create an empty Queue Q.
+
+Step 2: Process Starting Vertex
+   - Set visited[start] = true.
+   - Insert start into the rear of Q (enqueue).
+
+Step 3: Traverse the Graph
+   - Repeat Steps 4 and 5 while Q is not empty:
+
+Step 4: Dequeue and Print
+   - Remove the front element from Q and store it in curr.
+   - Print curr.
+
+Step 5: Visit All Unvisited Neighbors
+   - For each vertex neighbor adjacent to curr in adj[curr]:
+     - If visited[neighbor] == false:
+       - Set visited[neighbor] = true.
+       - Insert neighbor into the rear of Q (enqueue).
+
+Step 6: Stop
+   - Exit when Q becomes empty.
+
+Complexity:
+- Time Complexity: O(V + E)
+- Space Complexity: O(V)
+
+
+Algorithm: BFS Traversal using Adjacency Matrix (1-Based Indexing)
+
+Input:
+- V: Total number of vertices (numbered 1 to V)
+- adjMatrix[V + 1][V + 1]: 2D matrix where adjMatrix[u][v] == 1 indicates an edge between u and v (otherwise 0)
+- start: The starting vertex
+
+Output:
+- Prints all reachable vertices in Breadth-First order.
+
+Steps:
+
+Step 1: Initialize Data Structures
+   - Create a boolean array visited[V + 1] and initialize all elements to false (index 0 is unused).
+   - Create an empty Queue Q.
+
+Step 2: Process Starting Vertex
+   - Set visited[start] = true.
+   - Insert start into the rear of Q (enqueue).
+
+Step 3: Traverse the Graph
+   - Repeat Steps 4 and 5 while Q is not empty:
+
+Step 4: Dequeue and Print
+   - Remove the front element from Q and store it in curr.
+   - Print curr.
+
+Step 5: Scan All Possible Neighbors in the Matrix
+   - Loop i from 1 to V:
+     - If adjMatrix[curr][i] == 1 AND visited[i] == false:
+       - Set visited[i] = true.
+       - Insert i into the rear of Q (enqueue).
+
+Step 6: Stop
+   - Exit when Q becomes empty.
+
+Complexity:
+- Time Complexity: O(V^2)
+- Space Complexity: O(V^2) for the matrix + O(V) for visited array and queue
+
+> Traversing Disconnected Graphs:
+When we call DFS or BFS from a starting vertex, only vertices reachable from that vertex are visited.
+For a disconnected graph, some vertices may remain unvisited.
+To traverse the entire graph:
+
+for (int i = 1; i <= V; i++) {
+    if (!visited[i]) {
+        DFS(i, adj, visited); // Same for BFS
+    }
+}
+Process can Produce DFS Forest or BFS Forest.
+
+> Implementation	      Time Complexity
+DFS using adjacency list 	O(V+E)
+BFS using adjacency list   	O(V+E)
+DFS using adjacency matrix	O(V^2)
+BFS using adjacency matrix	O(V^2)
+
+PROPERTY              DFS                              BFS
+Data structure        Stack / Recursion                Queue
+Traversal             Goes deep first                  Goes level by level
+Shortest path         Not guaranteed                   Finds shortest path in an unweighted graph
+Common applications   Cycle detection, connected       Shortest paths, level-order traversal
+                      components

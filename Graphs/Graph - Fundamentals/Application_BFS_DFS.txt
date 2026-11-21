@@ -1,0 +1,142 @@
+Application of BFS and DFS:
+Cycle Detection:
+
+ 0-----1-----2---------3-------5-----6 
+              \       /
+               \     /
+                \   /
+                 \ /
+                  4
+
+i. Using BFS:
+Put these One by one in queue but to detect the parent we will use one logic queue<node, parent>
+this will help to detect whether that particular node is parent or not.
+
+Now, Let start from 0 : (0,-1) in Queue
+Here -1 is for Starting index
+
+Index : 0   1   2   3   4   5   6      
+Value : F   F   F   F   F   F   F    
+
+(0,-1) out (1,0) in [1 is node & 0 is its parent]
+
+Index : 0   1   2   3   4   5   6      
+Value : T   F   F   F   F   F   F   
+
+(1,0) out (2,1) in 
+
+Index : 0   1   2   3   4   5   6      
+Value : T   T   F   F   F   F   F   
+
+Important:
+(2,1) out (3,2) & (4,2) in
+
+Index : 0   1   2   3   4   5   6      
+Value : T   T   T   F   F   F   F   
+
+Now, (3,2) out in Sequence: (4,2), (4,3), (5,3)
+
+Index : 0   1   2   3   4   5   6      
+Value : T   T   T   T   F   F   F   
+
+Now, (4,2) out
+
+Check neighbours of 4:
+- 2 is already visited but it is the parent, so ignore it.
+- 3 is already visited and it is NOT the parent.
+
+Therefore, Cycle detected. Stop.
+
+Cycle: 2 → 3 → 4 → 2
+
+Index : 0   1   2   3   4   5   6      
+Value : T   T   T   T   T   F   F   
+
+Important:
+We do not need to process (4,3) and (5,3) because cycle is already detected.
+
+Condition for Cycle Detection:
+
+if (visited[adj] == true && adj != parent) {
+    return true;
+}
+
+ii. Using DFS:
+                    dfs(0,-1)
+                        |
+                    dfs(1,0)
+                        |
+                    dfs(2,1)
+                        |
+                    dfs(3,2)
+                      /   \
+                     /     \
+               dfs(4,3)   dfs(5,3)
+                  |           |
+                  |        dfs(6,5)
+                  |
+             Check edge 4 → 2
+             2 is visited and
+             2 != parent (3)
+                  |
+             CYCLE DETECTED
+Mark True as Per visit if already True yet to visit that indicate cycle.
+
+> Are graph Bipartite?
+A graph is called Bipartite if its vertices can be divided into two disjoint sets (A and B) such that:
+1. No two vertices within the same set are connected by an edge.
+2. Every edge connects a vertex from set A to a vertex from set B.
+
+Important observation: 
+1. Acyclic graph are always bipartite
+2. A graph containing cycles is bipartite if it has no odd-length cycle.
+
+Now How can we check that with traversal technique
+Maintain 2 colour Red -> 0, Blue -> 1
+Declare an array of Size as no. of vertices if started numbering from 0 and associate all element to -1.
+0-----1-----2---------3-------5 
+              \       /
+               \     /
+                \   /
+                 \ /
+                  4
+Index : 0   1   2   3   4   5   
+Value :-1  -1  -1  -1  -1  -1   
+
+0 -> 1
+Index : 0   1   2   3   4   5   
+Value : 0   1  -1  -1  -1  -1   
+Color 0 with red and 1 with blue 
+
+1 -> 0, 2
+Index : 0   1   2   3   4   5   
+Value : 0   1   0  -1  -1  -1   
+Skip 0 already coloured
+
+2 -> 1, 4, 3
+Index : 0   1   2   3   4   5   
+Value : 0   1   0   1   1  -1 
+Skip 1 colour with 1 and 3 with 1 
+
+3 -> 2, 5, 4
+Index : 0   1   2   3   4   5   
+Value : 0   1   0   1   1   0 
+Skip 2, 4 colour with 5 with 0 as opposite colour 
+
+Skip rest as all coloured
+4 -> 2, 3
+5 -> 3
+
+Look for adjacent 1's or adjacent 0's during traversal
+If Present: return false
+Else: Return true
+
+if (color[adj] == color[node]) {
+    return false;
+}
+color[adj] = 1 - color[node];
+
+> Complexity:
+Complexity	  Value
+Time	     O(V + E)
+Space	      O(V)

@@ -1,0 +1,74 @@
+Representation of Graph:
+1. Adjacency Matrix
+2. Adjacency List
+3. Edge list
+
+Adjacency Matrix:
+An adjacency matrix is a way of representing a graph as a boolean matrix of (0's and 1's).
+- If there is an edge from vertex i to j, mark adjMat[i][j] as 1. 
+- If there is no edge from vertex i to j, mark adjMat[i][j] as 0.
+
+• Space Complexity: O(V^2)
+• Time Complexity: O(1) to check or modify an edge; 
+   O(V^2) to iterate through all neighbors.
+- Used for Dense graphs where the number of edges is close V^2.
+
+Algo(Building From Edge list):
+1. Initialize AdjMatrix[V][V] with all zeros (0).
+2. For each edge (u, v) in E:
+     Set AdjMatrix[u][v] = 1
+     Set AdjMatrix[v][u] = 1   (if the graph is undirected)
+3. Return AdjMatrix
+
+Adjacency List:
+An array of Lists is used to store edges between two vertices.
+For each vertex \(u\), you maintain a list of all other vertices \(v\) that are directly connected to it by an edge. If the graph is weighted, the list stores pairs of (vertex, weight)
+• Space Complexity: O(V + E)
+• Time Complexity: O(degree(v)) to iterate over the neighbors of vertex v; O(1) to add an edge.
+Used for Sparse graph when E is much Smaller than V^2
+
+Algo (Building From Edge List):
+1. Initialize an empty list or array AdjList for each vertex in V.
+2. For each edge (u, v) in E:
+     Append v to the list of u
+     Append u to the list of v   (if the graph is undirected)
+3. Return AdjList
+
+Edge List: Question generally comes in this format
+Each element in the list represents an edge as a pair [u, v] (plus a third value weight if it is a weighted graph).
+• Space Complexity: O(E)
+• Time Complexity: O(E) to search for a specific edge.
+
+Ex:
+(A) ------ (B)
+ |          |
+ |          |
+(C) ------ (D)
+
+Adjacency Matrix:
+    A  B  C  D
+A [ 0, 1, 1, 0 ]
+B [ 1, 0, 0, 1 ]
+C [ 1, 0, 0, 1 ]
+D [ 0, 1, 1, 0 ]
+
+Adjacency List:
+A -> B, C
+B -> A, D
+C -> A, D
+D -> B, C
+
+Edges = [(A, B), (A, C), (B, D), (C, D)]
+
+Representation of various graph category:
+Undirected Graph:
+(A) ------ (B)
+ |          |
+ |          |
+(C) ------ (D)
+- Using Adjacency Matrix 
+    A  B  C  D
+A [ 0, 1, 1, 0 ]
+B [ 1, 0, 0, 1 ]
+C [ 1, 0, 0, 1 ]
+D [ 0, 1, 1, 0 ]

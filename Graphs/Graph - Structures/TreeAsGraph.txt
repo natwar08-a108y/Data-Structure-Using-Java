@@ -1,0 +1,75 @@
+Tree vs. General Graph:
+
+Feature: Definition
+Tree: A connected, acyclic graph with a single root (in rooted forms).
+General Graph: A collection of nodes and edges with arbitrary connections.
+
+Feature: Cycles
+Tree: None (acyclic).
+General Graph: Can contain cycles or loops.
+
+Feature: Path Between Nodes
+Tree: Exactly one unique path between any two nodes.
+General Graph: Can have multiple paths or no path between nodes.
+
+Feature: Edge Count
+Tree: Always V - 1 edges for V vertices.
+General Graph: Can have any number of edges.
+
+Feature: Common Uses
+Tree: Hierarchical data like file systems, XML/DOM trees, and organizational charts.
+General Graph: Networks like social graphs, maps, and the internet.
+
+Spanning Trees:
+A spanning tree is a connected, cycle-free subgraph that includes every vertex of an undirected graph.
+> For a graph with V vertices, any spanning tree contains all V vertices and exactly V - 1 edges.
+> Adding even one extra edge from the original graph creates a cycle
+> Removing any single edge breaks the tree into two disconnected components.
+> Complete graph with n vertices has exactly n^{n-2} possible spanning trees according to Cayley's Formula
+
+
+Ex:
+(A)---------(B)
+ |           |
+ |           |
+ |           |
+(C)---------(D)
+
+Possible Spanning Structures:
+(A)---------(B)
+ |           |
+ |           |
+ |           |
+(C)         (D)
+
+(A)         (B)
+ |           |
+ |           |
+ |           |
+(C)---------(D)
+
+(A)---------(B)
+             |
+             |
+             |
+(C)---------(D)
+
+(A)---------(B)
+ |           
+ |           
+ |           
+(C)---------(D)
+
+
+Minimum Spanning Tree (MST)
+When edges have weights (such as cost, distance, or latency), a Minimum Spanning Tree is a spanning tree whose total edge weight is as small as possible.
+Standard Algos to find MST:
+1. Kruskal's Algorithm:
+Sorts all edges in ascending order by weight and adds them one by one, skipping any edge that forms a cycle
+2. Prim's Algorithm:
+ Starts from an arbitrary vertex and repeatedly attaches the cheapest edge that connects a visited vertex to an unvisited one.
+
+Common Applications:
+• Network Design. Laying out electrical grids, water pipelines, and telecommunication cables with minimal material cost.
+• Routing Protocols. Preventing broadcast storms and infinite loops in local area networks using the Spanning Tree Protocol (STP).
+• Data & Graphics. Performing cluster analysis, image segmentation, and procedural maze generation

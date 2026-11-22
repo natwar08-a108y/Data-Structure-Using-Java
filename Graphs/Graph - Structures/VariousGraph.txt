@@ -1,0 +1,629 @@
+                        EULERIAN GRAPHS 
+1. CORE DEFINITIONS
+-------------------
+* Eulerian Trail (Path) : A walk that visits EVERY EDGE exactly once.
+* Eulerian Circuit      : An Eulerian trail that starts and ends at the SAME vertex.
+* Eulerian Graph        : A connected graph containing an Eulerian circuit.
+* Semi-Eulerian Graph   : A connected graph containing an open Eulerian trail 
+                          (starts and ends at different vertices), but no circuit.
+
+2. EULER'S DEGREE RULES (FOR CONNECTED GRAPHS)
+----------------------------------------------
+[Undirected Graphs]
+* Eulerian      -> 0 vertices of odd degree (ALL vertices have even degree).
+* Semi-Eulerian -> Exactly 2 vertices of odd degree (start at one, end at other).
+* Non-Eulerian  -> More than 2 vertices of odd degree (impossible to traverse).
+
+[Directed Graphs]
+* Eulerian      -> Strongly connected, and for EVERY vertex: In-Degree == Out-Degree.
+* Semi-Eulerian -> At most one vertex has (Out - In = 1) [Start], one has 
+                   (In - Out = 1) [End], and all others have In == Out.
+
+EXAMPLE 1: EULERIAN GRAPH (THE BOWTIE)
+--------------------------------------
+Status: EULERIAN (All vertices have even degree)
+
+    A ------- B
+     \       /
+      \     /
+       \   /
+         C
+       /   \
+      /     \
+     /       \
+    D ------- E
+
+Vertex Degrees:
+* deg(A) = 2 (Even)
+* deg(B) = 2 (Even)
+* deg(C) = 4 (Even)
+* deg(D) = 2 (Even)
+* deg(E) = 2 (Even)
+
+Valid Eulerian Circuit:
+A -> B -> C -> D -> E -> C -> A
+
+Adjacency List (for coding):
+A: B, C
+B: A, C
+C: A, B, D, E
+D: C, E
+E: C, D
+
+------------------------------------------
+EXAMPLE 2: SEMI-EULERIAN GRAPH (THE HOUSE)
+------------------------------------------
+Status: SEMI-EULERIAN (Exactly 2 vertices have odd degree)
+
+         A
+        / \
+       /   \
+      /     \
+     B-------C
+
+     | \   / |
+     |   X   |
+     | /   \ |
+     D-------E
+
+(Note: Diagonals B-E and C-D cross in the middle without a vertex)
+
+Vertex Degrees:
+* deg(A) = 2 (Even)
+* deg(B) = 4 (Even)
+* deg(C) = 4 (Even)
+* deg(D) = 3 (ODD - Must be Start or End)
+* deg(E) = 3 (ODD - Must be Start or End)
+
+Valid Eulerian Trail (Starts at D, Ends at E):
+D -> B -> A -> C -> B -> E -> C -> D -> E
+
+Adjacency List (for coding):
+A: B, C
+B: A, C, D, E
+C: A, B, D, E
+D: B, C, E
+E: B, C, D
+
+-------------------------------------------------
+EXAMPLE 3: NON-EULERIAN GRAPH (COMPLETE GRAPH K4)
+-------------------------------------------------
+Status: NON-EULERIAN (4 vertices have odd degree)
+
+    A --------- B
+
+    | \       / |
+    |   \   /   |
+    |     X     |
+    |   /   \   |
+    | /       \ |
+    D --------- C
+
+Vertex Degrees:
+* deg(A) = 3 (ODD)
+* deg(B) = 3 (ODD)
+* deg(C) = 3 (ODD)
+* deg(D) = 3 (ODD)
+
+Result:
+No Eulerian Trail or Circuit exists because there are 4 odd-degree vertices.
+
+--------------------------------------------------------------------------------
+
+EXAMPLE 4: DIRECTED EULERIAN GRAPH
+----------------------------------
+Status: EULERIAN (For every vertex, In-Degree == Out-Degree)
+
+    A ------> B
+    ^       / |
+
+    |      /  |
+    |     /   |
+    |    v    v
+    D <------ C
+
+Edges:
+A -> B
+B -> C
+B -> D
+C -> D
+D -> A  (Wait: let's balance D->A and C->A for In=Out)
+
+Balanced Directed Edges:
+A -> B
+B -> C
+B -> D
+C -> A
+D -> C
+
+In/Out Degrees:
+* A: In = 1 (from C), Out = 1 (to B)     [Balanced]
+* B: In = 1 (from A), Out = 2 (to C, D)  [Needs 1 more In -> add C -> B]
+
+Corrected Balanced Diagram:
+    A ------> B
+    ^       ^ |
+    |      /  |
+    |     /   v
+    D <--/--- C
+     \-------^  (Cycle: A->B->C->B->D->C->A)
+
+Final Balanced Edges:
+1. A -> B
+2. B -> C
+3. C -> B
+4. B -> D
+5. D -> C
+6. C -> A
+
+Degree Check:
+* A: In = 1, Out = 1
+* B: In = 2, Out = 2
+* C: In = 2, Out = 2
+* D: In = 1, Out = 1
+
+Valid Directed Eulerian Circuit:
+A -> B -> C -> B -> D -> C -> A
+
+                       HAMILTONIAN GRAPHS 
+
+1. CORE DEFINITIONS
+-------------------
+* Hamiltonian Path      : A path that visits EVERY VERTEX in a graph exactly once.
+                          (Does NOT need to visit every edge).
+* Hamiltonian Cycle     : A Hamiltonian path that starts and ends at the SAME 
+                          vertex (a closed loop visiting every vertex once).
+* Hamiltonian Graph     : A connected graph that contains at least one 
+                          Hamiltonian cycle.
+* Semi-Hamiltonian      : A connected graph that contains a Hamiltonian path, 
+  Graph                   but NO Hamiltonian cycle.
+
+2. KEY THEOREMS & CONDITIONS (SUFFICIENT CONDITIONS)
+----------------------------------------------------
+Unlike Eulerian graphs, there is NO simple necessary-and-sufficient condition 
+(like checking even/odd degrees) to instantly prove a graph is Hamiltonian. 
+Finding one is an NP-Complete problem. However, these theorems guarantee one exists:
+
+[1] Dirac's Theorem (1952)
+    If a simple graph has n vertices (where n >= 3) and EVERY vertex has 
+    degree >= n / 2, then the graph is guaranteed to be Hamiltonian.
+
+[2] Ore's Theorem (1960)
+    If a simple graph has n vertices (where n >= 3) and for every pair of 
+    NON-ADJACENT vertices (u, v), the sum of their degrees is:
+    deg(u) + deg(v) >= n, then the graph is guaranteed to be Hamiltonian.
+
+[3] Necessary Rules (Quick Elimination Checks)
+    * A graph with a vertex of degree 1 CANNOT have a Hamiltonian cycle.
+    * A graph with a bridge (cut-edge) or articulation point (cut-vertex) 
+      CANNOT have a Hamiltonian cycle.
+    * If a vertex has degree 2, BOTH of its incident edges MUST be included in 
+      any Hamiltonian cycle.
+
+3. EULERIAN VS. HAMILTONIAN (QUICK COMPARISON)
+Feature            | Eulerian Graph              | Hamiltonian Graph
+-------------------+-----------------------------+------------------------------
+Core Focus         | Visits every EDGE once      | Visits every VERTEX once
+Repeated Visits    | Vertices CAN repeat         | Vertices CANNOT repeat
+Unused Elements    | Every edge MUST be used     | Edges CAN be left unused
+Checking Condition | Easy (Check vertex degrees) | Hard (NP-Complete; no easy rule)
+Time Complexity    | Linear Time: O(E)           | Exponential Time (Backtracking)
+
+EXAMPLE 1: HAMILTONIAN GRAPH (THE HOUSE / CYCLE WITH CHORD)
+-----------------------------------------------------------
+Status: HAMILTONIAN (Contains a Hamiltonian Cycle)
+
+         A
+        / \
+       /   \
+      B-----C
+      |     |
+      |     |
+      D-----E
+
+Valid Hamiltonian Cycle:
+A -> B -> D -> E -> C -> A
+(Notice: Every vertex A, B, C, D, E is visited once. Edge B-C is unused, 
+which is completely valid for a Hamiltonian cycle!)
+
+Adjacency List (for coding):
+A: B, C
+B: A, C, D
+C: A, B, E
+D: B, E
+E: C, D
+
+---------------------------------------------------------
+EXAMPLE 2: SEMI-HAMILTONIAN GRAPH (PATH EXISTS, NO CYCLE)
+---------------------------------------------------------
+Status: SEMI-HAMILTONIAN (Has a Hamiltonian Path, NO Hamiltonian Cycle)
+
+    A ------- B ------- C
+              |
+              |
+              D
+
+Why NO Hamiltonian Cycle?
+* Vertices A, C, and D all have degree 1 (dead ends).
+* Once you enter A, C, or D, you cannot leave without repeating B.
+
+Valid Hamiltonian Path:
+Does NOT exist here because there are 3 leaf nodes (degree 1)! 
+Let's look at a true Semi-Hamiltonian graph below (The Pan Graph):
+
+    A ------- B
+    |         |
+    |         |
+    D ------- C ------- E
+
+True Semi-Hamiltonian Analysis:
+* Valid Hamiltonian Path  : E -> C -> D -> A -> B (Visits all 5 vertices once!)
+* Hamiltonian Cycle?      : NO (Vertex E has degree 1, so you cannot return to E).
+
+Adjacency List (for coding):
+A: B, D
+B: A, C
+C: B, D, E
+D: A, C
+E: C
+
+---------------------------------------------
+EXAMPLE 3: NON-HAMILTONIAN GRAPH (THE BOWTIE)
+---------------------------------------------
+Status: NON-HAMILTONIAN (Neither path nor cycle exists? Wait—let's check!)
+
+    A ------- B
+     \       /
+      \     /
+       \   /
+         C
+       /   \
+      /     \
+     /       \
+    D ------- E
+
+Analysis of The Bowtie:
+* Vertex C is a cut-vertex (articulation point). Removing C splits the graph.
+* Hamiltonian Path?  : YES -> A -> B -> C -> D -> E (Semi-Hamiltonian!)
+* Hamiltonian Cycle? : NO  -> To return from {D, E} back to {A, B}, you MUST 
+                              pass through vertex C a second time, which is forbidden.
+(Fun Fact: The Bowtie is EULERIAN, but NOT Hamiltonian!)
+
+------------------------------------------------------------------------
+EXAMPLE 4: FAMOUS NON-HAMILTONIAN GRAPH (THE HERSCHEL / PETERSEN CONCEPT)
+------------------------------------------------------------------------
+Status: NON-HAMILTONIAN (No Hamiltonian Path or Cycle)
+
+         A
+         |
+         B
+        / \
+       C   D
+
+       |   |
+       E   F
+
+Analysis:
+* Vertex B connects three separate branches (B-A, B-C-E, B-D-F).
+* Because B has 3 dead-end branches attached to it, any path can at most 
+  start in one branch, pass through B, and end in a second branch—leaving 
+  the third branch completely unvisited.
+* Result: Neither a Hamiltonian Path nor a Hamiltonian Cycle exists.
+
+5. REAL-WORLD APPLICATIONS
+* Traveling Salesperson Problem (TSP) : Finding the shortest Hamiltonian cycle 
+                                        in a weighted graph (delivery routes).
+* Knight's Tour Problem               : Moving a chess knight to visit every 
+                                        square on a chessboard once.
+* Gray Codes                          : Ordering binary numbers so consecutive 
+                                        values differ by only one bit (Hamiltonian 
+                                        cycle on a hypercube graph).
+* Network Topology                    : Designing fault-tolerant ring networks.
+   
+
+                         PLANAR GRAPHS
+1. CORE DEFINITIONS
+-------------------
+* Planar Graph      : A graph that can be drawn on a flat 2D plane such that 
+                      NO TWO EDGES CROSS each other (edges meet ONLY at 
+                      their endpoints/vertices).
+* Plane Graph       : A specific planar drawing (embedding) of a planar graph 
+                      where no edges actually cross.
+* Region (Face)     : A contiguous area of the plane bounded by edges. 
+                      NOTE: Always count the infinite OUTSIDE area as 1 region!
+* Non-Planar Graph  : A graph that CANNOT be drawn on a 2D plane without at 
+                      least one edge crossing, no matter how you rearrange it.
+
+2. EULER'S FORMULA FOR PLANAR GRAPHS
+------------------------------------
+For any CONNECTED planar graph drawn without edge crossings:
+    V - E + F = 2
+
+Where:
+* V = Number of Vertices
+* E = Number of Edges
+* F = Number of Faces (Regions, including the outer infinite region)
+
+[Important Edge-Limit Inequalities (For Simple Connected Planar Graphs)]
+1. General Graphs (V >= 3)    :  E <= 3V - 6
+2. Triangle-Free Graphs       :  E <= 2V - 4  (Graphs with no cycles of length 3)
+(If a graph violates these inequalities, it is GUARANTEED to be Non-Planar!)
+
+3. KURATOWSKI'S & WAGNER'S THEOREMS (THE TWO FORBIDDEN GRAPHS)
+--------------------------------------------------------------
+Every non-planar graph contains a hidden copy of one of two fundamental 
+non-planar graphs:
+1. K5   : The Complete Graph on 5 vertices (V = 5, E = 10).
+2. K3,3 : The Complete Bipartite Graph (Utility Graph: 3 houses, 3 utilities; 
+          V = 6, E = 9).
+
+* Kuratowski's Theorem : A finite graph is planar if and only if it does NOT 
+                         contain a subgraph that is a subdivision of K5 or K3,3.
+* Four Color Theorem   : Every planar graph can be vertex-colored using at most 
+                         4 colors so that no two adjacent vertices share a color.
+
+EXAMPLE 1: PLANAR GRAPH (COMPLETE GRAPH K4)
+-------------------------------------------
+Even though K4 is usually drawn with crossing diagonals, it IS PLANAR because 
+we can redraw one diagonal around the outside!
+
+Standard Drawing (Crosses):        Planar Redrawing (No Crossings!):
+    A --------- B                           A
+    | \       / |                          /|\
+    |   \   /   |                         / | \
+    |     X     |                        /  D  \
+    |   /   \   |                       /  / \  \
+    | /       \ |                      /  /   \  \
+    D --------- C                     B--/-----\--C
+                                       \_________/  (Outer curved edge B-C)
+
+Euler's Formula Verification (K4):
+* Vertices (V) = 4  (A, B, C, D)
+* Edges (E)    = 6  (AB, AC, AD, BC, BD, CD)
+* Faces (F)    = 4  (3 inner triangles + 1 outer infinite region)
+* Check        : V - E + F = 4 - 6 + 4 = 2  [VALID PLANAR GRAPH]
+
+Adjacency List (for coding):
+A: B, C, D
+B: A, C, D
+C: A, B, D
+D: A, B, C
+
+------------------------------------------------
+EXAMPLE 2: PLANAR GRAPH (THE 3D CUBE GRAPH - Q3)
+------------------------------------------------
+A 3D cube can be flattened onto a 2D plane without any crossing edges:
+
+    A ----------------- B
+    |\                 /|
+    | \               / |
+    |  E ----------- F  |
+    |  |             |  |
+    |  |             |  |
+    |  H ----------- G  |
+    | /               \ |
+    |/                 \|
+    D ----------------- C
+
+Euler's Formula Verification (Cube):
+* Vertices (V) = 8
+* Edges (E)    = 12
+* Faces (F)    = 6  (1 inner square EFGH + 4 trapezoids + 1 outer region)
+* Check        : V - E + F = 8 - 12 + 6 = 2  [VALID PLANAR GRAPH]
+
+--------------------------------------------------
+EXAMPLE 3: NON-PLANAR GRAPH #1 (COMPLETE GRAPH K5)
+--------------------------------------------------
+Status: NON-PLANAR (Impossible to draw without at least 1 crossing)
+
+          A
+        / | \
+       /  |  \
+      E---+---B
+      |\  |  /|
+      | \ | / |
+      |  \|/  |
+      |  /|\  |
+      | / | \ |
+      D---+---C
+
+Mathematical Proof of Non-Planarity:
+* Vertices (V) = 5
+* Edges (E)    = 10
+* Apply Inequality (E <= 3V - 6):
+  10 <= 3(5) - 6
+  10 <= 9  --> FALSE!
+* Because 10 > 9, K5 violates the planar edge limit and is NON-PLANAR.
+
+---------------------------------------------------
+EXAMPLE 4: NON-PLANAR GRAPH #2 (UTILITY GRAPH K3,3)
+---------------------------------------------------
+Status: NON-PLANAR (3 Houses connected to 3 Utilities: Water, Gas, Electricity)
+
+    H1        H2        H3   (Top Row: 3 Vertices)
+    | \      / | \      / |
+    |  \    /  |  \    /  |
+    |   \  /   |   \  /   |
+    |    XX    |    XX    |  (Edges inevitably cross!)
+    |   /  \   |   /  \   |
+    |  /    \  |  /    \  |
+    | /      \ | /      \ |
+    U1        U2        U3   (Bottom Row: 3 Vertices)
+
+Mathematical Proof of Non-Planarity:
+* Vertices (V) = 6
+* Edges (E)    = 9
+* Notice K3,3 is bipartite, so it has NO triangles (no 3-cycles).
+* Apply Triangle-Free Inequality (E <= 2V - 4):
+  9 <= 2(6) - 4
+  9 <= 8  --> FALSE!
+* Because 9 > 8, K3,3 is guaranteed to be NON-PLANAR.
+
+5. DUAL GRAPHS & REAL-WORLD APPLICATIONS
+* Dual Graph (G*)     : Constructed from a plane graph G by placing a vertex 
+                        inside each face of G and connecting two dual vertices 
+                        whenever their faces share an edge in G.
+* Map Coloring        : Coloring countries/states on a political map using at 
+                        most 4 colors (Four Color Theorem).
+* PCB & VLSI Design   : Laying out copper traces on a single-layer Printed 
+                        Circuit Board without short-circuiting wires.
+* Civil Engineering   : Designing road networks, railway tracks, and utility 
+                        pipelines without expensive bridges or underpasses.
+
+                      GRAPH ISOMORPHISM 
+1. CORE DEFINITION
+------------------
+* Graph Isomorphism : Two graphs G1 = (V1, E1) and G2 = (V2, E2) are 
+                      ISOMORPHIC (written as G1 ≅ G2) if they have the EXACT 
+                      SAME STRUCTURE, even if they are drawn differently or 
+                      have different vertex labels.
+* Formal Condition  : There exists a one-to-one and onto function (bijection) 
+                      f: V1 -> V2 such that two vertices u and v are adjacent 
+                      in G1 IF AND ONLY IF f(u) and f(v) are adjacent in G2.
+* Intuition         : If you could pick up G1 (made of stretchy strings and beads) 
+                      and rearrange the beads without cutting or gluing any 
+                      strings to look identical to G2, they are isomorphic!
+
+2. GRAPH INVARIANTS (QUICK NECESSARY CHECKS)
+--------------------------------------------
+To prove two graphs are NOT isomorphic, check their "invariants" (structural 
+properties that never change under relabeling). If ANY invariant differs, the 
+graphs are guaranteed NOT isomorphic:
+
+1. Number of Vertices (|V1| == |V2|)
+2. Number of Edges    (|E1| == |E2|)
+3. Degree Sequence    (Sorted list of vertex degrees must be identical)
+4. Cycle Lengths      (Number of triangles C3, squares C4, etc. must match)
+5. Connectivity       (Number of connected components & cut-vertices must match)
+6. Adjacency Matrix   (Row/column permutations of G1's matrix can form G2's)
+
+*(IMPORTANT: Matching all invariants does NOT 100% guarantee isomorphism—you 
+must still find the actual vertex-to-vertex mapping function f!)*
+
+EXAMPLE 1: ISOMORPHIC GRAPHS (PENTAGON VS. 5-POINTED STAR)
+----------------------------------------------------------
+Status: ISOMORPHIC (G1 ≅ G2) - Both are Cycle Graphs C5!
+
+Graph G1 (The Pentagon)              Graph G2 (The 5-Pointed Star)
+
+           A                                      1
+         /   \                                   / \
+        /     \                                 /   \
+       E       B                           3---/-----\---4
+        \     /                             \ /       \ /
+         \   /                               X         X
+         D---C                              / \       / \
+                                           5---\-----/---2
+                                                \   /
+                                                 \ /
+                                                  v (Edges: 1-2, 2-3, 3-4, 4-5, 5-1)
+
+Step 1: Check Invariants
+* Vertices : G1 has 5, G2 has 5. [Match]
+* Edges    : G1 has 5, G2 has 5. [Match]
+* Degrees  : Every vertex in both graphs has degree 2 -> (2, 2, 2, 2, 2). [Match]
+
+Step 2: Find Bijection Mapping f(V1) -> V2
+Walk around the cycle in G1: A -> B -> C -> D -> E -> A
+Walk along the star in G2  : 1 -> 2 -> 3 -> 4 -> 5 -> 1
+
+Mapping:
+* f(A) = 1
+* f(B) = 2
+* f(C) = 3
+* f(D) = 4
+* f(E) = 5
+
+Step 3: Verify Edge Preservation
+* G1 Edges: (A,B), (B,C), (C,D), (D,E), (E,A)
+* Mapped  : (1,2), (2,3), (3,4), (4,5), (5,1) -> Exact match with G2!
+Conclusion: G1 and G2 are ISOMORPHIC.
+
+----------------------------------------------------------------------
+EXAMPLE 2: ISOMORPHIC GRAPHS (CUBE GRAPH Q3 IN TWO DIFFERENT DRAWINGS)
+----------------------------------------------------------------------
+Status: ISOMORPHIC (G1 ≅ G2)
+
+Graph G1 (2D Nested Squares)         Graph G2 (3D Perspective Box)
+
+    A ------------- B                    1 ------------- 2
+    |\             /|                   /|              /|
+    | E --------- F |                  / |             / |
+    | |           | |                 5 ------------- 6  |
+    | |           | |                 |  |            |  |
+    | H --------- G |                 |  4 -----------|- 3
+    |/             \|                 | /             | /
+    D ------------- C                 8 ------------- 7
+
+Step 1: Check Invariants
+* Vertices : 8 in both.
+* Edges    : 12 in both.
+* Degrees  : All 8 vertices have degree 3 in both graphs.
+
+Step 2: Bijection Mapping
+* Outer square (A,B,C,D) maps to Back face  (1,2,3,4)
+* Inner square (E,F,G,H) maps to Front face (5,6,7,8)
+* f(A)=1, f(B)=2, f(C)=3, f(D)=4, f(E)=5, f(F)=6, f(G)=7, f(H)=8.
+Conclusion: G1 and G2 are ISOMORPHIC.
+
+------------------------------------------------------------------------
+EXAMPLE 3: NON-ISOMORPHIC GRAPHS (SAME INVARIANTS, DIFFERENT STRUCTURE!)
+------------------------------------------------------------------------
+Status: NOT ISOMORPHIC (Tricky Exam Classic!)
+
+Graph G1 (Two Disjoint Triangles)    Graph G2 (One Single Hexagon C6)
+
+      A           D                          1 ------- 2
+     / \         / \                        /           \
+    /   \       /   \                      6             3
+   B-----C     E-----F                      \           /
+                                             5 ------- 4
+
+Step 1: Check Basic Invariants (They ALL match!)
+* Vertices        : G1 has 6, G2 has 6.
+* Edges           : G1 has 6, G2 has 6.
+* Degree Sequence : G1 is (2,2,2,2,2,2), G2 is (2,2,2,2,2,2).
+
+Step 2: Check Deeper Structural Invariants (Fails here!)
+* Connected Components : G1 has 2 separate components; G2 has 1 connected component.
+* Cycle Lengths        : G1 has two 3-cycles (triangles); G2 has NO 3-cycles 
+                         (only one 6-cycle).
+Conclusion: Even though V, E, and degrees match, G1 and G2 are NOT ISOMORPHIC.
+
+-------------------------------------------------------------------------
+EXAMPLE 4: NON-ISOMORPHIC CONNECTED GRAPHS (SUBTLE DEGREE NEIGHBOR CHECK)
+-------------------------------------------------------------------------
+Status: NOT ISOMORPHIC
+
+Graph G1                             Graph G2
+
+    A --- B --- C                        1 --- 2 --- 3
+
+          |     |                        |     |
+          D --- E --- F                  4 --- 5 --- 6
+
+Step 1: Basic Invariants
+* Vertices : 6 in both.
+* Edges    : 6 in both.
+* Degrees  : 
+  - G1: deg(A)=1, deg(F)=1, deg(C)=2, deg(D)=2, deg(B)=3, deg(E)=3 -> (1,1,2,2,3,3)
+  - G2: deg(3)=1, deg(6)=1, deg(1)=2, deg(4)=2, deg(2)=3, deg(5)=3 -> (1,1,2,2,3,3)
+
+Step 2: Look at the Degree-3 Vertices & Their Neighbors
+* In G1: The two degree-3 vertices (B and E) are NOT adjacent to each other 
+         (B connects to A, C, D; E connects to C, D, F).
+* In G2: The two degree-3 vertices (2 and 5) ARE directly adjacent to each 
+         other (edge 2-5 exists!).
+Conclusion: Because adjacency between degree-3 vertices differs, G1 and G2 are 
+NOT ISOMORPHIC.
+
+4. SELF-COMPLEMENTARY GRAPHS & APPLICATIONS
+* Self-Complementary Graph : A graph G that is isomorphic to its own complement 
+                             G' (where G' has the exact opposite edges of G).
+                             Example: Path graph P4 and Cycle graph C5.
+* Chemistry & Drug Design  : Identifying identical molecular structures drawn 
+                             from different angles (chemical isomerism).
+* Computer Vision          : Matching 3D objects, facial landmarks, or scene 
+                             graphs regardless of rotation or scale.
+* Plagiarism & Malware     : Detecting copied code or mutated malware by 
+                             comparing Control Flow Graphs (CFGs).

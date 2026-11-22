@@ -1,0 +1,85 @@
+Study TreeAsGraph.txt
+MST: a spanning tree that has the minimum weight among all the possible spanning trees.
+
+1. Krushkal's MST Algo:
+- Greedy Approach: makes locally optimal choices at each step to achieve a globally optimal solution.
+- Implemented efficiently using a DSU ( Disjoint-Set ) data structure to keep track of the connected components of the graph. 
+Algorithm:
+1. First, it sorts all the edges of the graph by their weights,
+2. Then starts the iterations of finding the spanning tree.
+3. At each iteration, the algorithm adds the next lowest-weight edge one by one, such that the edges picked until now does not form a cycle.
+
+See the problem.png:
+Edge Sequence such that no cycle is formed:
+Pick edge 7 - 6 with weight 1
+Pick edge 8 - 2 with weight 2
+Pick edge 6 - 5 with weight 2 
+Pick edge 0 - 1 with weight 4
+Pick edge 2 - 5 with weight 4
+Skip edge 6 - 8, 7 - 8 as it form cycle.
+Pick edge 2 - 3 with weight 7
+Pick edge 1 - 2 with weight 8
+Skip edge 0 - 7 as it form cycle
+Pick edge 3 - 4 with weight 9
+Skip rest as they form cycle.
+
+Kruskal's Algorithm Complexity (V = Vertices, E = Edges)
+
+1. Time Complexity: O(E log E) or O(E log V)
+- Sorting E edges: O(E log E)
+- Union-Find (cycle check) for E edges: O(E * alpha(V)) ≈ O(E)
+- Total = O(E log E) + O(E) = O(E log E)
+- Since E <= V^2, log E ≈ 2 log V, so O(E log E) = O(E log V).
+
+2. Space Complexity: O(V + E)
+- Edge list storage: O(E)
+- Union-Find arrays (parent & rank): O(V)
+- Total = O(V + E)
+
+2. Prim’s algorithm 
+- Greedy algorithm
+The algorithm starts with an empty spanning tree and selects any vertex as the starting point.
+a. It maintains two sets of vertices: those already included in the MST and those not yet included.
+b. At each step, it selects the minimum-weight edge connecting a vertex in the MST to a vertex outside it and adds the new vertex to the MST.
+c. This process continues until all vertices are included in the MST.
+
+     (0)------5------(1)
+      \              /
+       \            /
+        \          /
+         1        3
+          \      /
+           \    /
+            \  /
+             (2)
+1. At start, all all vertices are unvisited, res = 0, and the min-heap is empty.
+2. Start from vertex 0 and insert {0, 0} into the min-heap, where each pair stores {weight, vertex}.
+3. Remove {0, 0}, mark vertex 0 as visited and add its weight to res. 
+- Min-heap: {1, 2}, {5, 1}
+- Visited array: [true, false, false]
+- res = 0
+4. Remove {1, 2}  because it has the smallest weight. Mark vertex 2 as visited and add 1 to res. 
+Since adjacent vertex 1 is unvisited, insert {3, 1} into the min-heap.
+- Min-heap: {3, 1}, {5, 1}
+- Visited array: [true, false, true]
+- res = 1
+5. Remove {3, 1} because it has the smallest weight. Mark vertex 1 as visited and add 3 to res. Its adjacent vertices, 0 and 2, are already visited, so no new entries are added to the min-heap.
+- Min-heap: {5, 1}
+- Visited array: [true, true, true]
+- res = 4
+6. Remove {5, 1}. Since vertex 1 is already visited, skip this entry. The min-heap becomes empty, so the algorithm terminates.
+- Min-heap: Empty
+- Visited array: [true, true, true]
+- res = 4
+
+Use Priority QUeue (oe Min Heap) to find the min. weight
+Algorithm:
+1. Initialize: Start at vertex 0 with weight 0 and put it into the min-heap.
+2. Extract Minimum: Pop the entry with the smallest weight from the heap.
+3. Check Visited: If the vertex has already been visited (included in the MST), ignore/skip it.
+4. Mark and Accumulate: Otherwise, mark the vertex as visited and add its edge weight to your running total (res).
+5. Expand: Push all edges connecting this vertex to its unvisited neighbors into the min-heap.
+6. Finish: Repeat until the min-heap is empty, then return res
+
+Time Complexity: O((E+V)*log(V)) where V is the number of vertex and E is the number of edges
+Auxiliary Space: O(E+V) where V is the number of vertex and E is the number of edges

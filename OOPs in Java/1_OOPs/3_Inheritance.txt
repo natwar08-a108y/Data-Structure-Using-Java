@@ -1,0 +1,285 @@
+INHERITANCE AND POLYMORPHISM
+
+0. FOUR PILLARS OF OOP
+
+1. Inheritance
+2. Polymorphism
+3. Encapsulation
+4. Abstraction
+
+These help in writing secure, organized and professional-grade code.
+
+
+1. INHERITANCE: BASICS
+
+- Inheritance is a mechanism where a child class (subclass) acquires the properties (variables) and behaviour (methods) of a parent class (superclass).
+- It models an IS-A relationship (BoxWeight IS-A Box, Dog IS-A Animal).
+- Main benefit is CODE REUSE: don't rewrite code; inherit the parent's structure and add only the child's own properties/methods.
+- Keyword: extends
+
+    class subclass-name extends superclass-name {
+        // body of class
+    }
+
+- A subclass can have only ONE direct superclass (no multiple inheritance of classes).
+- You can create a hierarchy where a subclass becomes the superclass of another subclass. But no class can be a superclass of itself.
+- A subclass includes all members of its superclass, but it CANNOT directly access members declared private in the superclass (use getters/setters or protected instead).
+- Constructors are NOT inherited. A child must call the parent constructor (using super) to initialize the parent's part.
+- Every class in Java implicitly extends the Object class (directly or indirectly).
+
+Access modifiers and inheritance:
+    private    -> not accessible in subclass
+    default    -> accessible in subclass only if in the same package
+    protected  -> accessible in subclass (even in a different package)
+    public     -> accessible everywhere
+
+
+2. EXAMPLE: Box AND BoxWeight
+
+    class Box {
+        double length, width, height;
+
+        Box() {                          // default box
+            this.length = -1;
+            this.width = -1;
+            this.height = -1;
+        }
+
+        Box(double side) {               // cube
+            this.length = side;
+            this.width = side;
+            this.height = side;
+        }
+
+        Box(double l, double w, double h) {
+            this.length = l;
+            this.width = w;
+            this.height = h;
+        }
+
+        Box(Box old) {                   // copy constructor
+            this.length = old.length;
+            this.width = old.width;
+            this.height = old.height;
+        }
+    }
+
+    class BoxWeight extends Box {
+        double weight;
+
+        BoxWeight() {
+            this.weight = -1;            // super() is called implicitly
+        }
+
+        BoxWeight(double l, double w, double h, double weight) {
+            super(l, w, h);              // call parent constructor
+            this.weight = weight;        // initialize only what is unique
+        }
+    }
+
+- Box uses constructor overloading to handle different cases (default box, cube, copy of an existing box).
+- BoxWeight only initializes its own value (weight). The rest is handled by Box. This also leaves Box free to make its fields private.
+
+
+3. A SUPERCLASS REFERENCE CAN POINT TO A SUBCLASS OBJECT
+
+    Box plainbox = new BoxWeight(2, 3, 4, 5);   // allowed (upcasting)
+    // plainbox.weight   -> COMPILE ERROR
+
+- It is the type of the REFERENCE variable (not the type of the object) that determines which members can be accessed.
+- When a subclass object is assigned to a superclass reference, you can access only the parts defined in the superclass.
+- Why? The compiler only knows what is defined in the reference's class. Box has no knowledge of weight, so it throws an error.
+
+    SUPERCLASS ref = new SUBCLASS();   // ref can access only what SUPERCLASS has
+
+- You cannot use a parent reference to initialize or access child-specific variables.
+- The reverse is not allowed:
+    BoxWeight b = new Box();           // ERROR (a Box is not a BoxWeight)
+- To access child members through a parent reference, DOWNCAST (check with instanceof first):
+    if (plainbox instanceof BoxWeight) {
+        BoxWeight bw = (BoxWeight) plainbox;
+        System.out.println(bw.weight);
+    }
+- Because of this rule, a superclass variable can reference any object derived from it. Example: a BoxWeight object can be passed to the Box(Box ob) constructor.
+
+
+4. THE super KEYWORD
+
+super has two general forms:
+
+(a) super(args): calls the superclass constructor
+
+    BoxWeight(double w, double h, double d, double m) {
+        super(w, h, d);      // call superclass constructor
+        weight = m;
+    }
+
+(b) super.member: accesses a member of the superclass hidden by a member of the subclass (a variable or a method)
+
+    class A { int x = 10; }
+    class B extends A {
+        int x = 20;          // hides A's x (variable shadowing)
+        void show() {
+            System.out.println(this.x);    // 20 (child's)
+            System.out.println(super.x);   // 10 (parent's)
+        }
+    }
+
+Rules and notes:
+- super() must be the FIRST statement in the child constructor. Because of this, super() and this() cannot both be used in the same constructor.
+- super() always refers to the constructor of the CLOSEST (immediate) superclass, even in a multilevel hierarchy.
+    BoxPrice -> super() calls BoxWeight()
+    BoxWeight -> super() calls Box()
+- In a hierarchy, if a superclass constructor requires parameters, then all subclasses must pass those parameters "up the line", whether or not the subclass needs parameters of its own.
+- If you don't write super(), the compiler automatically inserts super() (the default no-arg parent constructor). If the parent has no no-arg constructor (only parameterised ones), you MUST call it explicitly, e.g. super(l, w, h). Otherwise: compile error.
+
+Copy constructor with inheritance:
+
+    class BoxWeight extends Box {
+        double weight;
+
+        BoxWeight(BoxWeight ob) {
+            super(ob);               // ob is a BoxWeight, but this calls Box(Box ob)
+            weight = ob.weight;
+        }
+    }
+
+- super(ob) works because a Box reference can refer to a BoxWeight object. Box only knows about its own members.
+
+Order of constructor execution:
+- Constructors complete in ORDER OF DERIVATION: parent first, then child.
+- Reason: a superclass has no knowledge of any subclass, so its initialization is separate from (and possibly a prerequisite to) the subclass's initialization. It must finish first.
+
+
+5. TYPES OF INHERITANCE
+
+(a) Single: class B extends A. The standard linear model.
+
+(b) Multilevel: A -> B -> C (a chain; C extends B, B extends A).
+
+(c) Hierarchical: ONE base class is extended by MULTIPLE child classes. Example: BoxPrice, BoxWeight, BoxColor all extend Box. Each child inherits base properties but is independent of the others and cannot access each other's specific members.
+
+(d) Multiple: one class inheriting from multiple classes.
+    - NOT supported for classes in Java.
+    - Reason: the DIAMOND PROBLEM (ambiguity). If two parents have a method with the same name, the child would not know which version to execute.
+    - Workaround: INTERFACES (they define behaviour without full implementation, so no ambiguity). A class can implement multiple interfaces.
+        class C implements I1, I2 { ... }
+
+(e) Hybrid: a combination of the above types. Since Java disallows multiple inheritance of classes, hybrid inheritance is achieved through interfaces.
+
+
+6. POLYMORPHISM
+
+- Ability to represent a single entity in multiple forms ("many forms").
+- Example: a generic Shape class has an area() method. Circle and Square extend Shape and each provides its own implementation of area(). The program can call area() on different objects without knowing their specific type at compile time.
+
+    class Shape {
+        void area() { System.out.println("Area of shape"); }
+    }
+    class Circle extends Shape {
+        @Override
+        void area() { System.out.println("Area = pi * r * r"); }
+    }
+    class Square extends Shape {
+        @Override
+        void area() { System.out.println("Area = side * side"); }
+    }
+
+    Shape s = new Circle();
+    s.area();     // runs Circle's area()
+
+Types:
+
+(a) Static / Compile-time polymorphism
+    - Achieved via METHOD OVERLOADING.
+    - Same method name, different signature (number, type or order of parameters). Return type alone is not enough.
+    - The compiler decides which method to run at compile time.
+
+(b) Dynamic / Run-time polymorphism
+    - Achieved via METHOD OVERRIDING.
+    - The version of the method to run is decided at runtime based on the ACTUAL OBJECT, not the reference type.
+
+
+7. METHOD OVERRIDING
+
+- A child class provides its own implementation of a method already defined in the parent, with the same name, same parameters and same (or covariant) return type.
+- Use the @Override annotation. The compiler then checks you are really overriding (catches typos).
+- Rules:
+    - Access level cannot be more restrictive than the parent's (can be wider: protected -> public is OK, public -> protected is NOT).
+    - Cannot override private, static or final methods.
+    - Return type must be the same or a subtype (covariant return).
+    - Cannot throw broader checked exceptions than the parent method.
+- Overloading vs Overriding:
+    Overloading: same class (or subclass), different parameters, resolved at compile time.
+    Overriding: parent-child classes, same signature, resolved at runtime.
+
+Dynamic Method Dispatch:
+- The mechanism Java uses to decide which overridden method to run at runtime. It is the foundation of run-time polymorphism.
+- Even if the reference is of the Parent type, if it points to a Child object, Java checks the actual object at runtime and runs the Child's version.
+
+    Parent p = new Child();
+    p.show();     // Child's show() runs (if Child overrides it)
+
+Method binding:
+- Early binding (static): resolved at compile time. Used for overloading, and for final, private and static methods. The compiler knows exactly which method is called.
+- Late binding (dynamic): resolved at runtime. Used for overriding. The version is determined by object type, not reference type.
+
+Polymorphism does NOT apply to instance variables:
+- Variables are resolved by REFERENCE type (compile time), unlike methods.
+
+    class A { int x = 10; }
+    class B extends A { int x = 20; }
+
+    A obj = new B();
+    System.out.println(obj.x);   // 10 (not 20)
+
+- Variable hiding is not overriding.
+
+
+8. final WITH INHERITANCE
+
+The keyword final has three uses.
+
+(a) Named constant
+    final int MAX = 100;
+
+(b) Prevent method overriding
+    - A method declared final cannot be overridden by any child class.
+    - Can give a performance benefit: the compiler may inline calls to it (copy the bytecode directly into the caller) since it knows it will not be overridden. This removes method-call overhead.
+    - Normally Java resolves method calls at runtime (late binding). Since a final method cannot be overridden, a call to it can be resolved at compile time (early binding).
+    - (Note: modern JVMs optimize aggressively anyway, so don't use final just for speed.)
+
+(c) Prevent inheritance
+    - Precede the class declaration with final: a final class cannot be extended. Example: String, Integer.
+    - It is a security and design choice so that critical implementation logic cannot be modified.
+    - Declaring a class final implicitly makes all its methods final too.
+    - A class cannot be BOTH abstract and final, because an abstract class is incomplete by itself and relies on its subclasses to provide complete implementations.
+
+
+9. STATIC METHODS AND INHERITANCE
+
+- Static methods belong to the class, not to an instance.
+- Static methods can be inherited, but they cannot be overridden. If a child defines a static method with the same signature, it is METHOD HIDING, not overriding.
+- Calls are resolved by REFERENCE type at compile time (early binding). The parent's method runs if the reference is of Parent type, no matter which object it points to.
+- Same idea for interfaces: static interface methods are NOT inherited. They always run from the parent interface itself, and so they must have a body.
+
+
+10. ENCAPSULATION VS ABSTRACTION
+
+Encapsulation:
+- Wrapping data (variables) and code (methods) together into a single unit (class). It is also called DATA HIDING.
+- Make fields private and expose them through public getters/setters. This protects the internal state of the object from unauthorized access.
+
+    class Student {
+        private int rno;
+        public int getRno() { return rno; }
+        public void setRno(int rno) { this.rno = rno; }
+    }
+
+Abstraction:
+- Hides the COMPLEXITY of the implementation. Focuses on WHAT an object does, not HOW it does it.
+- Achieved using abstract classes and interfaces (covered in later lessons).
+
+Difference:
+    Encapsulation -> hides the internal DATA to keep it safe (how it is protected)
+    Abstraction   -> hides the implementation COMPLEXITY (what is exposed)

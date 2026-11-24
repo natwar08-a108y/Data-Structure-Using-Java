@@ -1,0 +1,223 @@
+CLASS
+
+1. CLASS AND OBJECT
+
+- A class is a template (blueprint) for an object; an object is an instance of a class.
+- A class creates a new data type that can be used to create objects.
+- A class is a LOGICAL construct. An object has PHYSICAL reality (it occupies space in memory).
+- A class is a collection of properties (fields) + behaviour (methods).
+
+Why classes? (Example)
+Suppose you must store data of 5 students. You could use a 2D array, but a class is better: it is a template holding every property a student should have (rno, name, marks). Each student is then an object of that template.
+
+Similarly, Car can be a class. Many companies create their own car objects from that template: same properties, different values.
+
+Three essential properties of an object:
+1. State - the value held by the object (its data)
+2. Identity - distinguishes one object from another; think of it as the place in memory where the object's value is stored
+3. Behaviour - the effect of the operations (methods) on the object
+
+
+2. DOT OPERATOR
+
+- Links the name of the object with the name of an instance variable/method.
+    student1.rno   -> gives access to rno of student1
+- Commonly called the "dot operator", but the Java spec formally classifies "." as a separator.
+
+
+3. CREATING AN OBJECT
+
+class Student {
+    int rno;
+    String name;
+    float marks;
+}
+
+Student student1;            // only DECLARATION, not creation
+                             // student1 is just a reference (in stack)
+student1 = new Student();    // allocation: object created in heap
+
+// Combined:
+Student student1 = new Student();
+// LHS (reference): handled at COMPILE time
+// RHS (object): handled at RUN time by the JVM
+
+- The 'new' keyword dynamically allocates memory (at run time) for an object and returns a reference to it. That reference is, more or less, the memory address of the object; it is stored in the variable.
+- In Java, ALL class objects must be dynamically allocated.
+- After 'Student student1;' nothing is referred to yet. After 'student1 = new Student();' student1 points to the rno, name, marks that live in the heap. Creating another object makes it point to another set of rno, name, marks in the heap.
+- Java is safe because you cannot manipulate references like real pointers: you cannot point a reference to an arbitrary memory location or do integer arithmetic on it.
+
+General form:
+    classname class-var = new classname();
+- class-var: variable of the class type being created
+- classname(): the class name followed by parentheses specifies the CONSTRUCTOR for the class
+
+Default values (when nothing is assigned):
+    student1.rno   -> 0
+    student1.name  -> null
+    student1.marks -> 0.0
+(Only fields that actually exist in the class give default values.)
+
+Assigning values:
+    student1.rno = 34;
+    student1.name = "Radha";
+    student1.marks = 88.5f;
+
+
+4. WHY NO 'new' FOR int, char, etc.?
+
+- Primitive types are NOT implemented as objects; they are "normal" variables. This is done for efficiency.
+- Local primitives are stored in stack memory directly, hence no 'new'.
+- Wrapper classes (Integer, Double, ...) convert primitives into objects.
+
+
+5. REFERENCE ASSIGNMENT (IMPORTANT)
+
+Box b1 = new Box();
+Box b2 = b1;
+
+- b1 and b2 refer to the SAME object. No memory is allocated and nothing is copied; only the reference is copied.
+- Any change made through b2 affects the object b1 refers to (same object).
+- When you assign one reference variable to another, you copy the REFERENCE, not the object.
+
+Student one = new Student();
+Student two = one;
+one.name = "Something something";
+System.out.println(two.name);   // prints "Something something" too
+
+
+6. PARAMETER vs ARGUMENT
+
+int square(int i) {
+    return i * i;
+}
+
+- Parameter: variable defined by a method that receives a value when the method is called. (i in square(int i))
+- Argument: value passed to a method when it is invoked. (100 in square(100))
+- Inside square(), parameter i receives the argument value.
+
+
+7. THE this KEYWORD
+
+- Used inside any method/constructor to refer to the CURRENT object, i.e. the object on which the method was invoked.
+- 'this' simply gets replaced by the name of the calling object.
+
+class Student {
+    int rno;
+    String name;
+    float marks;
+
+    void greeting() {
+        System.out.println("Hello! " + name);
+        System.out.println("Hello! " + this.name);
+    }
+
+    void changeName(String newName) {
+        name = newName;              // replaces name with newName
+    }
+}
+
+student1.changeName("Naam");
+student1.greeting();
+// Hello! Naam
+// Hello! Naam    (name and this.name do the same thing internally)
+
+- In constructors, 'this' is needed when parameter names clash with field names (otherwise default values stay):
+    this.rno = rno;     // field = parameter
+
+
+8. CONSTRUCTORS
+
+- A special method that runs automatically when an object is created (before the 'new' operator completes). It defines what happens at object creation.
+- Has no return type, not even void (the implicit return type is the class type itself).
+- 'new Student()' is calling the Student() constructor.
+- If you don't define any constructor, Java provides a default one automatically.
+
+Example (no-arg constructor with fixed values):
+    Student() {
+        this.rno = 13;
+        this.name = "kunal";
+        this.marks = 88.5f;
+    }
+
+Parameterised constructor:
+    Student(int rno, String naam, float marks) {
+        this.rno = rno;
+        this.name = naam;
+        this.marks = marks;
+    }
+    Student student1 = new Student(13, "kunal", 84.5f);
+
+CONSTRUCTOR OVERLOADING:
+- A class can have several constructors with different parameters.
+    new Student()                  -> uses the no-arg one (13, "kunal", ...)
+    new Student(34, "Radha", 88f)  -> uses the parameterised one
+- NOTE: once you define any constructor, Java no longer gives the default one. If you remove the no-arg constructor, you must pass all three arguments.
+
+COPY CONSTRUCTOR (taking values from another existing object):
+    Student(Student other) {
+        this.name = other.name;
+        this.rno = other.rno;
+        this.marks = other.marks;
+    }
+    Student random = new Student(student1);   // copies all properties
+
+CONSTRUCTOR CHAINING with this(...):
+    Student() {
+        this(13, "default person", 100.0f);   // calls the parameterised one
+    }
+(this(...) must be the first statement in the constructor.)
+
+
+9. final KEYWORD
+
+- A field declared final cannot be modified later, making it essentially a constant. It must be initialized when declared (or in the constructor).
+- Convention: ALL UPPERCASE names for final fields.
+    final int FILE_OPEN = 2;
+- final guarantees immutability only for PRIMITIVE types. For a reference type, the reference never changes (always points to the same object), but the object's own contents CAN change.
+
+
+10. THE finalize() METHOD
+
+- Used when an object needs to perform some action just before it is destroyed (reclaimed by the garbage collector). The Java run time calls it right before the object's memory is freed.
+
+    protected void finalize() {
+        // finalization code here
+        System.out.println("Object is destroyed");
+    }
+
+- Object destruction happens on its own (garbage collector); you can only tell Java what to do when it is destroying an object.
+- For a small number of objects, destruction/GC is unlikely to be triggered; you would need to create a very large number of objects to see it.
+- NOTE: finalize() is deprecated since Java 9 (and deprecated for removal in newer versions). Do not use it in real code; it is covered here only for understanding.
+
+
+11. INHERITANCE AND CONSTRUCTORS
+
+- The no-arg constructor of the base class is called automatically from the derived class constructor.
+
+class Base {
+    Base() {
+        System.out.println("Base Class Constructor Called ");
+    }
+}
+
+class Derived extends Base {
+    Derived() {
+        System.out.println("Derived Class Constructor Called ");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Derived d = new Derived();
+    }
+}
+
+Output:
+    Base Class Constructor Called
+    Derived Class Constructor Called
+
+- Every class has a default constructor, whether or not you declare it.
+- A derived class constructor MUST call a super class constructor. This is done by default (implicit super()) even if the derived class has a parameterised constructor.
+- If the super class has NO no-arg constructor (only parameterised ones), the derived class constructor must explicitly call the parameterised super constructor using super(args).
+
